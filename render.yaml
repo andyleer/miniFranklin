@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: franklin-planner-web
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: franklin-planner-db
+          property: connectionString
+
+databases:
+  - name: franklin-planner-db
+    plan: free
