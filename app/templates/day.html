@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% set title = day.day_date.isoformat() ~ " • Planner" %}
+
+{% block content %}
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="brand">FRANKLIN PAGE</div>
+    <div class="date">
+      <div class="date-big">{{ day.day_date.strftime("%A") }}</div>
+      <div class="date-sub">{{ day.day_date.strftime("%B %d, %Y") }}</div>
+    </div>
+  </div>
+
+  <nav class="week">
+    {% for d in week %}
+      {% set active = (d == day.day_date) %}
+      <a class="weekday {{ 'active' if active else '' }}" href="{{ url_for('main.day_view', day_str=d.isoformat()) }}">
+        <div class="wk-dow">{{ d.strftime("%a") }}</div>
+        <div class="wk-num">{{ d.strftime("%d") }}</div>
+      </a>
+    {% endfor %}
+  </nav>
+</header>
+
+<section class="capture">
+  <form method="post" action="{{ url_for('main.capture', day_str=day.day_date.isoformat()) }}">
+    <input name="capture" class="capture-input" placeholder="Capture: 9:30 call Tony | A: order bearings | note: ..." autocomplete="off" />
+    <button class="btn" type="submit">Add</button>
+  </form>
+</section>
+
+<main class="grid">
+  <!-- LEFT: priorities + tasks -->
+  <section class="card">
+    <div class="card-title">A/B/C Priorities</div>
+
+    <div class="tasks">
+      {% for pr in ['A','B','C'] %}
+        <div class="task-group">
+          <div class="task-group-title">{{ pr }}</div>
+          <ul class="task-list">
+            {% for t in day_tasks if t.priority == pr %}
+              <li class="task {{ 'done' if t.status == 'done' else '' }}">
+                <form method="post" action="{{ url_for('main.toggle_task', task_id=t.id) }}">
+                  <button class="task-check" type="submit" aria-label="Toggle task"></button>
+                </form>
+                <div class="task-text">{{ t.text }}</div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="card-title">Open Global Tasks</div>
+    <ul class="task-list compact">
+      {% for t in global_tasks %}
+        <li class="task">
+          <form method="post" action="{{ url_for('main.toggle_task', task_id=t.id) }}">
+            <button class="task-check" type="submit" aria-label="Toggle task"></button>
+          </form>
+          <div class="task-text"><span class="pill">{{ t.priority }}</span> {{ t.text }}</div>
+        </li>
+      {% else %}
+        <li class="muted">Nothing lurking in the shadows. Nice.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <!-- RIGHT: time ladder -->
+  <section class="card ladder">
+    <div class="card-title">Schedule</div>
+
+    <div class="ladder-wrap">
+      <div class="hours">
+        {% for h in range(6, 22) %}
+          <div class="hour">
+            <div class="hour-label">{{ "%02d:00"|format(h) }}</div>
+            <div class="hour-line"></div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="appts">
+        {% for a in appts %}
+          <div class="appt">
+            <div class="appt-time">
+              {{ a.start_time.strftime("%H:%M") }}
+              {% if a.end_time %}–{{ a.end_time.strftime("%H:%M") }}{% endif %}
+            </div>
+            <div class="appt-title">{{ a.title }}</div>
+            <form method="post" action="{{ url_for('main.delete_appt', appt_id=a.id) }}">
+              <button class="appt-del" type="submit" aria-label="Delete appointment">×</button>
+            </form>
+          </div>
+        {% else %}
+          <div class="muted">No appointments. The day is a clean sheet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM LEFT: focus + wins -->
+  <section class="card">
+    <div class="card-title">Daily Focus</div>
+    <form method="post" action="{{ url_for('main.update_day', day_str=day.day_date.isoformat()) }}">
+      <input name="focus" class="textline" value="{{ day.focus or '' }}" placeholder="What makes today a win?" />
+      <div class="card-title sub">Wins / Notes to Self</div>
+      <textarea name="wins" class="textarea" placeholder="Tiny victories count too.">{{ day.wins or '' }}</textarea>
+      <div class="actions">
+        <button class="btn" type="submit">Save</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- BOTTOM RIGHT: notes log -->
+  <section class="card">
+    <div class="card-title">Notes Log</div>
+    <div class="notes">
+      {% for n in notes %}
+        <div class="note">
+          <div class="note-meta">{{ n.created_at.strftime("%H:%M") }}</div>
+          <div class="note-body">{{ n.body }}</div>
+        </div>
+      {% else %}
+        <div class="muted">No notes yet. (The page is listening.)</div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <a class="link" href="{{ url_for('main.day_view', day_str='today') }}">Today</a>
+  <span class="dot">•</span>
+  <span class="muted">Screen target: 720×1920 portrait</span>
+</footer>
+{% endblock %}
