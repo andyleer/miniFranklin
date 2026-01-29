@@ -1,0 +1,78 @@
+/* Franklin Planner – Classic Palette */
+
+:root {
+  /* Paper */
+  --bg-main: #f7f4ec;
+  --bg-panel: #fbf9f3;
+  --bg-accent: #efeadd;
+
+  /* Ink */
+  --ink-primary: #1f2933;
+  --ink-secondary: #4b5563;
+  --ink-muted: #6b7280;
+
+  /* Lines & rules */
+  --rule-light: #d6d3c9;
+  --rule-medium: #b9b6ad;
+  --rule-dark: #8b8a82;
+
+  /* Highlights */
+  --accent-primary: #2c4a6f;   /* Franklin blue */
+  --accent-soft: #a7b6c8;
+
+  /* Status colors */
+  --success: #3b6e4f;
+  --warning: #8a6d3b;
+  --danger: #7a3b3b;
+}
+
+/* Global */
+body {
+  background: var(--bg-main);
+  color: var(--ink-primary);
+  font-family: "Libre Baskerville", "Georgia", serif;
+}
+
+/* Panels / sections */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--rule-light);
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: var(--ink-primary);
+  border-bottom: 2px solid var(--rule-medium);
+  letter-spacing: 0.03em;
+}
+
+/* Planner lines */
+.rule {
+  border-bottom: 1px solid var(--rule-light);
+}
+
+/* Time blocks */
+.time-slot {
+  border-left: 3px solid var(--accent-primary);
+  background: linear-gradient(
+    to right,
+    rgba(44, 74, 111, 0.05),
+    transparent
+  );
+}
+
+/* Priority markers */
+.priority-a { color: var(--accent-primary); }
+.priority-b { color: var(--ink-secondary); }
+.priority-c { color: var(--ink-muted); }
+
+/* Buttons */
+button {
+  background: var(--bg-accent);
+  border: 1px solid var(--rule-medium);
+  color: var(--ink-primary);
+}
+
+button:hover {
+  background: #e6e1d4;
+}
