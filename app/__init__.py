@@ -8,8 +8,12 @@ def create_app() -> Flask:
     app.config.from_object(Config)
 
     db.init_app(app)
+
+    # Create tables automatically if they don't exist yet (no migrations required)
     with app.app_context():
-    db.create_all()
+        db.create_all()
+
+    # Keep migrate init if you might use migrations later; harmless to leave in.
     migrate.init_app(app, db)
 
     from .routes import bp as main_bp
