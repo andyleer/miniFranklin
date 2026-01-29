@@ -9,11 +9,14 @@ def create_app() -> Flask:
 
     db.init_app(app)
 
-    # Create tables automatically if they don't exist yet (no migrations required)
     with app.app_context():
-        db.create_all()
+        # IMPORTANT: load models so tables are registered with SQLAlchemy
+        from . import models  # noqa: F401
 
-    # Keep migrate init if you might use migrations later; harmless to leave in.
+        db.create_all()
+        app.logger.warning("✅ db.create_all() executed")
+
+    # Optional, fine to keep even if you aren't using migrations
     migrate.init_app(app, db)
 
     from .routes import bp as main_bp
