@@ -1,382 +1,311 @@
-/* styles.css — MiniFranklin (Franklin-inspired, safe rewrite)
-   Keeps your selectors + layout, changes look & feel.
-*/
+/* style.css (Franklin-ish paper theme) */
 
-/* ---------- Theme tokens ---------- */
-:root {
-  /* Paper */
-  --paper: #f7f4ec;
-  --paper-2: #fbf9f3;
-  --paper-3: #efeadd;
+/* ---------- Theme variables ---------- */
+:root{
+  /* Paper + ink */
+  --paper: #f2f1e6;          /* warm + slight green */
+  --paper-deeper: #ebe9d9;   /* subtle contrast */
+  --ink: #1f2937;
+  --muted: #5b6470;
 
-  /* Ink */
-  --ink: #1f2933;
-  --ink-2: #374151;
-  --muted: #6b7280;
+  /* Lines + borders */
+  --rule: rgba(60, 70, 60, 0.16);
+  --border: rgba(40, 50, 40, 0.18);
 
-  /* Rules / borders */
-  --rule: #d6d3c9;
-  --rule-2: #b9b6ad;
+  /* UI accents */
+  --accent: #1f6f5b;         /* Franklin-ish green */
+  --accent-ink: #ffffff;
 
-  /* Accent */
-  --accent: #2c4a6f;       /* Franklin-ish blue */
-  --accent-2: #567aa3;
+  /* Shadows */
+  --shadow: 0 1px 2px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.06);
 
-  /* Status */
-  --ok: #2f6f46;
-  --danger: #7a2e2e;
-
-  /* Surfaces */
-  --card: var(--paper-2);
-  --shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 8px 20px rgba(0, 0, 0, 0.05);
-
-  /* Focus ring */
-  --focus: 0 0 0 3px rgba(44, 74, 111, 0.18);
+  /* Typography */
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --serif: Georgia, "Times New Roman", Times, serif;
 
   /* Radius */
   --r: 10px;
-  --r-sm: 8px;
 }
 
 /* ---------- Base ---------- */
-* { box-sizing: border-box; }
+*{ box-sizing: border-box; }
 
-html, body { height: 100%; }
+html, body{ height: 100%; }
 
-body {
+body{
   margin: 0;
-  font-family: "Libre Baskerville", "Georgia", ui-serif, serif;
-  background: var(--paper);
+  font-family: var(--sans);
   color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* A subtle paper grain */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
   background:
-    radial-gradient(circle at 20% 15%, rgba(0,0,0,0.035), transparent 35%),
-    radial-gradient(circle at 80% 40%, rgba(0,0,0,0.03), transparent 40%),
-    radial-gradient(circle at 50% 90%, rgba(0,0,0,0.02), transparent 45%);
-  opacity: 0.55;
+    radial-gradient(1200px 700px at 30% 10%, rgba(31,111,91,0.06), transparent 60%),
+    radial-gradient(1000px 600px at 70% 0%, rgba(31,111,91,0.04), transparent 55%),
+    var(--paper);
 }
 
-/* ---------- App shell ---------- */
-.app-shell {
+/* Keep the app from feeling cramped on mobile */
+.app-shell{
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1rem 1.25rem 2rem;
+  padding: 1rem 1rem 2rem;
 }
 
 /* ---------- Header ---------- */
-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--rule-2);
+  margin-bottom: 0.75rem;
 }
 
-h1 {
-  font-size: 1.45rem;
+h1{
   margin: 0;
-  letter-spacing: 0.02em;
-  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-size: 1.45rem;
 }
 
-/* User info */
-.user-info {
-  display: flex;
-  align-items: center;
+.user-info{
+  display:flex;
+  align-items:center;
   gap: 0.5rem;
-  color: var(--ink-2);
-  font-size: 0.95rem;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
-.user-info.hidden { display: none; }
+.user-info.hidden{ display:none; }
 
 /* ---------- Buttons ---------- */
-button {
+button{
   padding: 0.45rem 0.8rem;
   border-radius: 999px;
-  border: 1px solid var(--rule-2);
-  background: linear-gradient(to bottom, #ffffff, var(--paper-2));
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(3px);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--ink);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
 }
 
-button:hover { filter: brightness(0.985); }
-
-button:active {
-  transform: translateY(1px);
-  box-shadow: none;
+button.primary{
+  background: var(--accent);
+  border-color: rgba(0,0,0,0.08);
+  color: var(--accent-ink);
 }
 
-button.primary {
-  background: linear-gradient(to bottom, var(--accent), #24415f);
-  color: #fff;
-  border-color: #24415f;
-}
-
-button:focus {
-  outline: none;
-  box-shadow: var(--focus);
-}
+button:hover{ filter: brightness(0.98); }
+button:active{ transform: translateY(1px); }
 
 /* ---------- Cards / Sections ---------- */
-.card {
-  background: var(--card);
-  padding: 1rem 1.1rem;
+.card{
+  background: rgba(255,255,255,0.35);
+  border: 1px solid var(--border);
   border-radius: var(--r);
-  border: 1px solid var(--rule);
   box-shadow: var(--shadow);
+  padding: 1rem 1rem;
   margin-bottom: 1rem;
 }
 
-.hidden { display: none; }
+.hidden{ display:none; }
 
 /* ---------- Auth ---------- */
-.auth-forms {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem;
+.auth-forms{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 1rem;
 }
 
-.auth-forms form {
+.auth-forms form{
   flex: 1 1 240px;
   min-width: 240px;
 }
 
-.auth-forms label {
-  display: block;
+.auth-forms label{
+  display:block;
   font-size: 0.85rem;
   margin-bottom: 0.35rem;
   color: var(--muted);
-  letter-spacing: 0.02em;
 }
 
-.auth-forms input {
-  width: 100%;
+.auth-forms input{
+  width:100%;
   padding: 0.45rem 0.55rem;
-  margin-bottom: 0.7rem;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--rule-2);
-  background: #fff;
-  color: var(--ink);
+  margin-bottom: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.55);
 }
 
-.auth-forms input:focus {
-  outline: none;
-  box-shadow: var(--focus);
-  border-color: var(--accent-2);
-}
-
-.divider {
-  display: flex;
-  align-items: center;
+.divider{
+  display:flex;
+  align-items:center;
   font-size: 0.8rem;
   color: var(--muted);
-  letter-spacing: 0.02em;
 }
 
 .divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
+.divider::after{
+  content:"";
+  flex:1;
+  height:1px;
   background: var(--rule);
   margin: 0 0.5rem;
 }
 
-.error-msg {
-  color: var(--danger);
-  font-size: 0.85rem;
+.error-msg{
+  color:#9b1c1c;
+  font-size: 0.9rem;
 }
 
-/* ---------- Planner shell ---------- */
-.planner {
-  background: var(--card);
-  padding: 1rem 1.1rem 1.35rem;
+/* ---------- Planner container ---------- */
+.planner{
+  background: var(--paper);
+  border: 1px solid var(--border);
   border-radius: var(--r);
-  border: 1px solid var(--rule);
   box-shadow: var(--shadow);
-  position: relative;
-  overflow: hidden;
-}
+  padding: 1rem 1rem 1.25rem;
 
-/* Subtle ruled-paper lines inside planner */
-.planner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
+  /* subtle “page” texture */
+  background-image:
+    linear-gradient(to bottom, rgba(60,70,60,0.05), rgba(60,70,60,0.02)),
     repeating-linear-gradient(
       to bottom,
-      transparent,
-      transparent 28px,
-      rgba(214, 211, 201, 0.55) 29px
+      transparent 0,
+      transparent 26px,
+      rgba(60,70,60,0.07) 27px
     );
-  opacity: 0.35;
-  mix-blend-mode: multiply;
+  background-size: auto, auto;
 }
 
-/* Keep content above the ruled overlay */
-.planner > * { position: relative; }
-
-/* ---------- Planner top bar ---------- */
-.planner-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
+/* Top controls */
+.planner-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--rule);
 }
 
-.date-picker {
-  display: flex;
-  align-items: center;
+.date-picker{
+  display:flex;
+  align-items:center;
   gap: 0.5rem;
-  color: var(--ink-2);
-}
-
-/* Date input */
-.date-picker input[type="date"] {
-  padding: 0.35rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid var(--rule-2);
-  background: #fff;
-  color: var(--ink);
-}
-
-.date-picker input[type="date"]:focus {
-  outline: none;
-  box-shadow: var(--focus);
-  border-color: var(--accent-2);
-}
-
-/* Save status */
-.save-status {
-  font-size: 0.85rem;
-  color: var(--ok);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-.save-status.error-msg {
-  color: var(--danger);
-}
-
-/* ---------- Body columns ---------- */
-.planner-body {
-  display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
 }
 
-.planner-body .column {
-  flex: 1 1 320px;
+.date-picker input[type="date"]{
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.55);
+}
+
+.save-status{
+  font-size: 0.9rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.save-status.error-msg{ color:#9b1c1c; }
+
+/* ---------- Planner body layout ---------- */
+.planner-body{
+  display:flex;
+  gap: 1rem;
+  align-items:flex-start;
+}
+
+.planner-body .column{
+  flex: 1 1 340px;
   min-width: 320px;
 }
 
-/* Section headings */
-.planner-body h2 {
-  margin-top: 0.25rem;
-  margin-bottom: 0.4rem;
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-2);
+.planner-body h2{
+  margin: 0.4rem 0 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.2px;
 }
 
 /* ---------- Tables ---------- */
-.tasks-table {
-  width: 100%;
+.tasks-table{
+  width:100%;
   border-collapse: collapse;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid var(--rule);
-  border-radius: var(--r-sm);
+  margin-bottom: 0.65rem;
+  font-size: 0.95rem;
+  background: rgba(255,255,255,0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   overflow: hidden;
 }
 
 .tasks-table th,
-.tasks-table td {
-  border: 1px solid var(--rule);
-  padding: 0.35rem 0.45rem;
-  vertical-align: top;
+.tasks-table td{
+  border-bottom: 1px solid var(--rule);
+  padding: 0.4rem 0.5rem;
+  vertical-align: middle;
 }
 
-.tasks-table th {
-  background: rgba(239, 234, 221, 0.85);
-  text-align: left;
-  color: var(--ink-2);
-  letter-spacing: 0.04em;
-  font-size: 0.82rem;
+.tasks-table th{
+  text-align:left;
+  font-weight: 650;
+  color: rgba(20, 30, 20, 0.85);
+  background: rgba(31,111,91,0.06);
 }
 
-/* Table inputs */
+.tasks-table tr:last-child td{ border-bottom: none; }
+
 .tasks-table input[type="text"],
 .tasks-table input[type="time"],
-.tasks-table select {
-  width: 100%;
-  border: 1px solid var(--rule-2);
+.tasks-table select{
+  width:100%;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 0.3rem 0.4rem;
-  font-size: 0.85rem;
-  background: #fff;
-  color: var(--ink);
-}
-
-.tasks-table input[type="text"]:focus,
-.tasks-table input[type="time"]:focus,
-.tasks-table select:focus {
-  outline: none;
-  box-shadow: var(--focus);
-  border-color: var(--accent-2);
-}
-
-/* ---------- Textareas ---------- */
-textarea {
-  width: 100%;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--rule-2);
-  padding: 0.55rem 0.6rem;
+  padding: 0.35rem 0.45rem;
   font-size: 0.9rem;
+  background: rgba(255,255,255,0.6);
+}
+
+/* ---------- Textareas (lined planner feel) ---------- */
+textarea{
+  width:100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.65rem;
+  font-size: 0.95rem;
   resize: vertical;
-  background: rgba(255, 255, 255, 0.8);
-  color: var(--ink);
+  min-height: 140px;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(60,70,60,0.00) 0,
+      rgba(60,70,60,0.00) 26px,
+      rgba(60,70,60,0.10) 27px
+    ),
+    rgba(255,255,255,0.35);
 }
 
-textarea:focus {
-  outline: none;
-  box-shadow: var(--focus);
-  border-color: var(--accent-2);
-}
+/* ---------- Mobile fixes ---------- */
+@media (max-width: 820px){
+  .app-shell{ padding: 0.75rem 0.75rem 1.25rem; }
 
-/* ---------- Small utility polish ---------- */
-::selection {
-  background: rgba(44, 74, 111, 0.16);
-}
+  header{
+    align-items:flex-start;
+    flex-direction: column;
+  }
 
-/* Respect users who prefer less motion */
-@media (prefers-reduced-motion: reduce) {
-  button:active { transform: none; }
-}
+  .planner-body{
+    flex-direction: column;
+  }
 
-/* Optional: slightly tighter on narrow screens */
-@media (max-width: 520px) {
-  .app-shell { padding: 0.75rem 0.85rem 1.5rem; }
-  header { flex-direction: column; align-items: flex-start; }
+  .planner-body .column{
+    min-width: 0;
+    width: 100%;
+  }
+
+  h1{ font-size: 1.35rem; }
 }
