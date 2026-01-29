@@ -8,6 +8,8 @@ def create_app() -> Flask:
     app.config.from_object(Config)
 
     db.init_app(app)
+    with app.app_context():
+    db.create_all()
     migrate.init_app(app, db)
 
     from .routes import bp as main_bp
