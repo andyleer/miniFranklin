@@ -61,41 +61,34 @@ def index():
 def day_view(day_str: str):
     user = get_or_create_default_user()
 
+    # Parse the day safely
     if day_str == "today":
-        d = date.today()
+        day_date = date.today()
     else:
-        d = datetime.strptime(day_str, "%Y-%m-%d").date()
+        day_date = datetime.strptime(day_str, "%Y-%m-%d").date()
 
-    day = get_or_create_day(user.id, d)
+    # Ensure a Day row exists (if you are using a Day table)
+    day = get_or_create_day(user.id, day_date)
 
-    # tasks: show day-linked tasks first, plus open “global” tasks (day_id is null)
+    # Tasks for this day
     day_tasks = (
         db.session.query(Task)
-        .filter(Task.user_id == user.id, Task.day_id == day.id)
+        .filter(
+            Task.user_id == user.id,
+            Task.day_id == day.id
+        )
         .order_by(Task.priority.asc(), Task.created_at.asc())
         .all()
     )
 
-    global_tasks = (
-        db.session.query(Task)
-        .filter(Task.user_id == user.id, Task.day_id.is_(None), Task.status == "open")
-        .order_by(Task.priority.asc(), Task.created_at.asc())
-        .limit(50)
-        .all()
-    )
-
-   # revert to what you had (no explicit ordering)
-    appts = (
+    # Appointments aligned to ladder
+    appointments = (
         db.session.query(Appointment)
-        .filter_by(user_id=user.id, day=day_date)
-        .all()
-    )
-
-
-    notes = (
-        db.session.query(Note)
-        .filter_by(day_id=day.id)
-        .order_by(Note.created_at.desc())
+        .filter(
+            Appointment.user_id == user.id,
+            Appointment.day == day_date   # 🔑 DATE, not string
+        )
+        .order_by(Appointment.start_time.asc())
         .all()
     )
 
@@ -103,11 +96,10 @@ def day_view(day_str: str):
         "day.html",
         user=user,
         day=day,
-        week=week_strip(d),
-        day_tasks=day_tasks,
-        global_tasks=global_tasks,
-        appts=appts,
-        notes=notes,
+        day_date=day_date,
+        day_str=day_date.isoformat(),
+        tasks=day_tasks,
+        appointments=appointments,
     )
 
 
