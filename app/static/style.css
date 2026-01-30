@@ -1,11 +1,11 @@
 :root{
-  --bg: #0b0c0f;
-  --paper: #11131a;
-  --ink: #eaeef7;
-  --muted: rgba(234,238,247,.65);
-  --line: rgba(234,238,247,.14);
-  --accent: #ff3b3b;
-  --ok: #1bd67d;
+  --bg: #e6f0ef;
+  --paper: #e6f0ef;
+  --ink: #006861;
+  --muted: rgb(82 207 199);
+  --line: rgb(5 108 104);
+  --accent: #006c66;
+  --ok: #3d6652;
 }
 
 *{ box-sizing:border-box; }
@@ -32,7 +32,7 @@ body{
   align-items:flex-start;
   justify-content:space-between;
   padding: 12px 14px;
-  background: rgba(17,19,26,.75);
+  background: rgb(231 240 239);
   border: 1px solid var(--line);
   border-radius: 18px;
   backdrop-filter: blur(8px);
@@ -61,7 +61,7 @@ body{
   border-radius: 14px;
   padding: 8px 0;
   text-align:center;
-  background: rgba(255,255,255,.03);
+  background: rgb(193 223 220);
 }
 .weekday.active{
   border-color: rgba(255,59,59,.45);
@@ -91,15 +91,15 @@ body{
 .capture-input:focus{ border-color: rgba(255,59,59,.45); }
 
 .btn{
-  background: rgba(255,59,59,.14);
-  border: 1px solid rgba(255,59,59,.45);
+  background: rgb(193 223 220);
+  border: 1px solid rgb(0 104 97);
   color: var(--ink);
   border-radius: 14px;
   padding: 12px 14px;
   font-weight: 700;
   cursor:pointer;
 }
-.btn:hover{ background: rgba(255,59,59,.20); }
+.btn:hover{ background: rgb(228 204 204 / 20%); }
 
 .grid{
   margin-top: 12px;
@@ -110,7 +110,7 @@ body{
 }
 
 .card{
-  background: rgba(17,19,26,.75);
+  background: rgb(255 255 255);
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 12px 14px;
@@ -156,13 +156,13 @@ body{
   width: 18px;
   height: 18px;
   border-radius: 6px;
-  border: 1px solid rgba(234,238,247,.35);
+  border: 1px solid rgb(0 104 97);
   background: transparent;
   cursor:pointer;
   margin-top: 2px;
 }
 .task.done .task-check{
-  background: rgba(27,214,125,.22);
+  background: rgb(228 33 33);
   border-color: rgba(27,214,125,.55);
 }
 .task-text{ font-size: 14px; line-height: 1.2rem; }
@@ -172,7 +172,7 @@ body{
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(234,238,247,.18);
+  border: 1px solid #FFC107;
   color: var(--muted);
   margin-right: 6px;
 }
@@ -182,9 +182,9 @@ body{
   position: relative;
   height: 820px;
   overflow: hidden;
-  border: 1px solid rgba(234,238,247,.10);
+  border: 1px solid rgb(0 104 97);
   border-radius: 14px;
-  background: rgba(0,0,0,.12);
+  background: rgb(255 255 255 / 12%);
 }
 .hours{
   position:absolute;
@@ -206,7 +206,7 @@ body{
 .hour-line{
   flex:1;
   height:1px;
-  background: rgba(234,238,247,.10);
+  background: rgb(0 104 97);
 }
 .appts{
   position:absolute;
@@ -223,8 +223,8 @@ body{
   gap:10px;
   padding: 10px 10px;
   border-radius: 14px;
-  border: 1px solid rgba(255,59,59,.30);
-  background: rgba(255,59,59,.08);
+  border: 1px solid rgb(0 104 97);
+  background: rgb(231 240 239);
 }
 .appt-time{ font-weight: 800; font-size: 12px; min-width: 72px; }
 .appt-title{ font-size: 14px; flex:1; }
