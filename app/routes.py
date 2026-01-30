@@ -82,7 +82,7 @@ def day_view(day_str: str):
     )
 
     # Appointments aligned to ladder
-    appointments = (
+      appointments = (
         db.session.query(Appointment)
         .filter(Appointment.day_id == day.id)
         .order_by(Appointment.start_time.asc())
