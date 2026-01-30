@@ -2,7 +2,7 @@
   --bg: #e6f0ef;
   --paper: #e6f0ef;
   --ink: #006861;
-  --muted: rgb(82 207 199);
+  --muted: rgb(36 87 83);
   --line: rgb(5 108 104);
   --accent: #006c66;
   --ok: #3d6652;
@@ -61,11 +61,12 @@ body{
   border-radius: 14px;
   padding: 8px 0;
   text-align:center;
-  background: rgb(193 223 220);
+  background: rgb(255 255 255);
 }
 .weekday.active{
-  border-color: rgba(255,59,59,.45);
-  background: rgba(255,59,59,.08);
+  border-color: rgb(0 0 0);
+  background: rgb(193 223 220);
+  border: 2px solid ;
 }
 .wk-dow{ font-size: 11px; color: var(--muted); }
 .wk-num{ font-size: 14px; font-weight: 700; }
@@ -73,14 +74,14 @@ body{
 .capture{
   margin-top: 12px;
   padding: 12px 14px;
-  background: rgba(17,19,26,.75);
+  background: rgb(231 240 239);
   border: 1px solid var(--line);
   border-radius: 18px;
 }
 .capture form{ display:flex; gap:10px; }
 .capture-input{
   flex:1;
-  background: rgba(255,255,255,.04);
+  background: rgb(255 255 255);
   border: 1px solid var(--line);
   color: var(--ink);
   border-radius: 14px;
@@ -99,7 +100,7 @@ body{
   font-weight: 700;
   cursor:pointer;
 }
-.btn:hover{ background: rgb(228 204 204 / 20%); }
+.btn:hover{ background: rgb(230 233 232); }
 
 .grid{
   margin-top: 12px;
@@ -110,7 +111,7 @@ body{
 }
 
 .card{
-  background: rgb(255 255 255);
+  background: rgb(231 240 239);
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 12px 14px;
@@ -147,7 +148,7 @@ body{
   padding: 8px 10px;
   border: 1px solid rgba(234,238,247,.10);
   border-radius: 14px;
-  background: rgba(255,255,255,.03);
+  background: rgb(255 255 255);
 }
 .task.done{
   opacity: .55;
@@ -162,8 +163,8 @@ body{
   margin-top: 2px;
 }
 .task.done .task-check{
-  background: rgb(228 33 33);
-  border-color: rgba(27,214,125,.55);
+  background: rgb(193 223 220);
+  border-color: #9E9E9E;
 }
 .task-text{ font-size: 14px; line-height: 1.2rem; }
 
@@ -229,19 +230,19 @@ body{
 .appt-time{ font-weight: 800; font-size: 12px; min-width: 72px; }
 .appt-title{ font-size: 14px; flex:1; }
 .appt-del{
-  background: transparent;
-  border: 1px solid rgba(234,238,247,.22);
+  background: #c1dfdc;
+  border: 1px solid rgb(0 104 97);
   color: var(--ink);
   border-radius: 10px;
   width: 28px;
   height: 28px;
   cursor:pointer;
 }
-.appt-del:hover{ border-color: rgba(255,59,59,.55); }
+.appt-del:hover{ border-color: #FF5722; }
 
 .textline{
   width:100%;
-  background: rgba(255,255,255,.04);
+  background: rgb(231 240 239);
   border: 1px solid var(--line);
   color: var(--ink);
   border-radius: 14px;
@@ -252,7 +253,7 @@ body{
 .textarea{
   width:100%;
   min-height: 180px;
-  background: rgba(255,255,255,.04);
+  background: rgb(255 255 255);
   border: 1px solid var(--line);
   color: var(--ink);
   border-radius: 14px;
