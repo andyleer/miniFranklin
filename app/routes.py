@@ -67,7 +67,7 @@ def day_view(day_str: str):
     else:
         day_date = datetime.strptime(day_str, "%Y-%m-%d").date()
 
-    # Ensure a Day row exists (if you are using a Day table)
+    # Ensure a Day row exists
     day = get_or_create_day(user.id, day_date)
 
     # Tasks for this day
@@ -86,11 +86,19 @@ def day_view(day_str: str):
         db.session.query(Appointment)
         .filter(
             Appointment.user_id == user.id,
-            Appointment.day == day_date   # 🔑 DATE, not string
+            Appointment.day == day_date
         )
         .order_by(Appointment.start_time.asc())
         .all()
     )
+
+    # ─────────────────────────────────────────────
+    # 🔹 ADD THIS BLOCK (week navigation)
+    # ─────────────────────────────────────────────
+    week_days = week_strip(day_date)          # Mon–Sun list
+    prev_week = day_date - timedelta(days=7)
+    next_week = day_date + timedelta(days=7)
+    # ─────────────────────────────────────────────
 
     return render_template(
         "day.html",
@@ -100,6 +108,11 @@ def day_view(day_str: str):
         day_str=day_date.isoformat(),
         tasks=day_tasks,
         appointments=appointments,
+
+        # 🔹 ADD THESE
+        week_days=week_days,
+        prev_week=prev_week,
+        next_week=next_week,
     )
 
 
