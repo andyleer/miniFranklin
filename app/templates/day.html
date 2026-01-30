@@ -2,12 +2,54 @@
 {% set title = day.day_date.isoformat() ~ " • Planner" %}
 
 {% block content %}
+
+
+
+
+
+<div class="topbar">
+  <div>
+    <div class="brand">FRANKLIN PAGE</div>
+    <div class="date">
+      <div class="date-big">{{ day.strftime("%A") }}</div>
+      <div class="date-sub">{{ day.strftime("%B %d, %Y") }}</div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
+    <div class="week-nav">
+      <a class="wkbtn" href="{{ url_for('main.day_view', day_str=prev_week.strftime('%Y-%m-%d')) }}">‹ Prev</a>
+      <a class="wkbtn" href="{{ url_for('main.day_view', day_str=next_week.strftime('%Y-%m-%d')) }}">Next ›</a>
+    </div>
+
+    <div class="week">
+      {% for d in week_days %}
+        <a class="weekday {% if d == day %}active{% endif %}"
+           href="{{ url_for('main.day_view', day_str=d.strftime('%Y-%m-%d')) }}">
+          <div class="wk-dow">{{ d.strftime("%a") }}</div>
+          <div class="wk-num">{{ d.day }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
 <header class="topbar">
   <div class="topbar-left">
     <div class="brand">FRANKLIN PAGE</div>
     <div class="date">
       <div class="date-big">{{ day.day_date.strftime("%A") }}</div>
       <div class="date-sub">{{ day.day_date.strftime("%B %d, %Y") }}</div>
+      
     </div>
   </div>
 
