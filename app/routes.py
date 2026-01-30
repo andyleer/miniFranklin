@@ -84,12 +84,13 @@ def day_view(day_str: str):
         .all()
     )
 
-   appts = (
-       db.session.query(Appointment)
-       .filter_by(user_id=user.id, day=day_date)
-       .order_by(Appointment.start_time.asc(), Appointment.created_at.asc())
-       .all()
-   )
+   # revert to what you had (no explicit ordering)
+    appts = (
+        db.session.query(Appointment)
+        .filter_by(user_id=user.id, day=day_date)
+        .all()
+    )
+
 
     notes = (
         db.session.query(Note)
