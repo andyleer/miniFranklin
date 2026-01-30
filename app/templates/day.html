@@ -3,16 +3,12 @@
 
 {% block content %}
 
-
-
-
-
 <div class="topbar">
   <div>
     <div class="brand">FRANKLIN PAGE</div>
     <div class="date">
-      <div class="date-big">{{ day.strftime("%A") }}</div>
-      <div class="date-sub">{{ day.strftime("%B %d, %Y") }}</div>
+      <div class="date-big">{{ day_date.strftime("%A") }}</div>
+      <div class="date-sub">{{ day_date.strftime("%B %d, %Y") }}</div>
     </div>
   </div>
 
@@ -24,7 +20,7 @@
 
     <div class="week">
       {% for d in week_days %}
-        <a class="weekday {% if d == day %}active{% endif %}"
+        <a class="weekday {% if d == day_date %}active{% endif %}"
            href="{{ url_for('main.day_view', day_str=d.strftime('%Y-%m-%d')) }}">
           <div class="wk-dow">{{ d.strftime("%a") }}</div>
           <div class="wk-num">{{ d.day }}</div>
@@ -34,38 +30,8 @@
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-<header class="topbar">
-  <div class="topbar-left">
-    <div class="brand">FRANKLIN PAGE</div>
-    <div class="date">
-      <div class="date-big">{{ day.day_date.strftime("%A") }}</div>
-      <div class="date-sub">{{ day.day_date.strftime("%B %d, %Y") }}</div>
-      
-    </div>
-  </div>
-
-  <nav class="week">
-    {% for d in week %}
-      {% set active = (d == day.day_date) %}
-      <a class="weekday {{ 'active' if active else '' }}" href="{{ url_for('main.day_view', day_str=d.isoformat()) }}">
-        <div class="wk-dow">{{ d.strftime("%a") }}</div>
-        <div class="wk-num">{{ d.strftime("%d") }}</div>
-      </a>
-    {% endfor %}
-  </nav>
-</header>
-
 <section class="capture">
-  <form method="post" action="{{ url_for('main.capture', day_str=day.day_date.isoformat()) }}">
+  <form method="post" action="{{ url_for('main.capture', day_str=day_date.isoformat()) }}">
     <input name="capture" class="capture-input" placeholder="Capture: 9:30 call Tony | A: order bearings | note: ..." autocomplete="off" />
     <button class="btn" type="submit">Add</button>
   </form>
@@ -81,7 +47,7 @@
         <div class="task-group">
           <div class="task-group-title">{{ pr }}</div>
           <ul class="task-list">
-            {% for t in day_tasks if t.priority == pr %}
+            {% for t in tasks if t.priority == pr %}
               <li class="task {{ 'done' if t.status == 'done' else '' }}">
                 <form method="post" action="{{ url_for('main.toggle_task', task_id=t.id) }}">
                   <button class="task-check" type="submit" aria-label="Toggle task"></button>
@@ -126,7 +92,7 @@
       </div>
 
       <div class="appts">
-        {% for a in appts %}
+        {% for a in appointments %}
           <div class="appt">
             <div class="appt-time">
               {{ a.start_time.strftime("%H:%M") }}
@@ -147,7 +113,7 @@
   <!-- BOTTOM LEFT: focus + wins -->
   <section class="card">
     <div class="card-title">Daily Focus</div>
-    <form method="post" action="{{ url_for('main.update_day', day_str=day.day_date.isoformat()) }}">
+    <form method="post" action="{{ url_for('main.update_day', day_str=day_date.isoformat()) }}">
       <input name="focus" class="textline" value="{{ day.focus or '' }}" placeholder="What makes today a win?" />
       <div class="card-title sub">Wins / Notes to Self</div>
       <textarea name="wins" class="textarea" placeholder="Tiny victories count too.">{{ day.wins or '' }}</textarea>
@@ -178,4 +144,5 @@
   <span class="dot">•</span>
   <span class="muted">Screen target: 720×1920 portrait</span>
 </footer>
+
 {% endblock %}
