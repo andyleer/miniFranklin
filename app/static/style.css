@@ -209,23 +209,35 @@ body{
   height:1px;
   background: rgb(0 104 97);
 }
+/* Overlay layer that matches the ladder grid */
 .appts{
   position:absolute;
   inset: 10px;
-  left: 82px;
+  left: 82px;     /* keeps it to the right of hour labels */
   right: 10px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+  top: 10px;
+  bottom: 10px;
+
+  /* IMPORTANT: not a flex column anymore */
+  display:block;
 }
+
+/* Each appointment becomes a “sticky note” placed by top/height */
 .appt{
+  position:absolute;
+  left: 0;
+  right: 0;
+
   display:flex;
   align-items:center;
   gap:10px;
+
   padding: 10px 10px;
   border-radius: 10px;
   border: 1px solid rgb(0 104 97);
   background: rgb(231 240 239);
+
+  overflow:hidden;
 }
 .appt-time{ font-weight: 800; font-size: 12px; min-width: 72px; }
 .appt-title{ font-size: 14px; flex:1; }
