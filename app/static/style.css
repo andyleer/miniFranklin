@@ -305,3 +305,25 @@ body{
 .link{ color: var(--ink); text-decoration:none; border-bottom: 1px dotted rgba(234,238,247,.35); }
 .dot{ opacity:.6; }
 .muted{ color: var(--muted); font-size: 13px; }
+.week-nav{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  width: 100%;
+}
+
+.wkbtn{
+  text-decoration:none;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgb(255 255 255);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.wkbtn:hover{
+  background: rgb(193 223 220);
+}
+
