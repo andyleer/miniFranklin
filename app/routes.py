@@ -84,13 +84,11 @@ def day_view(day_str: str):
     # Appointments aligned to ladder
     appointments = (
         db.session.query(Appointment)
-        .filter(
-            Appointment.user_id == user.id,
-            Appointment.day == day_date
-        )
+        .filter(Appointment.day_id == day.id)
         .order_by(Appointment.start_time.asc())
         .all()
     )
+
 
     # ─────────────────────────────────────────────
     # 🔹 ADD THIS BLOCK (week navigation)
