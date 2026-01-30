@@ -75,28 +75,24 @@ def day_view(day_str: str):
         db.session.query(Task)
         .filter(
             Task.user_id == user.id,
-            Task.day_id == day.id
+            Task.day_id == day.id,
         )
         .order_by(Task.priority.asc(), Task.created_at.asc())
         .all()
     )
 
-    # Appointments aligned to ladder
-      appointments = (
+    # Appointments for this day (Appointment links to Day via day_id)
+    appointments = (
         db.session.query(Appointment)
         .filter(Appointment.day_id == day.id)
         .order_by(Appointment.start_time.asc())
         .all()
     )
 
-
-    # ─────────────────────────────────────────────
-    # 🔹 ADD THIS BLOCK (week navigation)
-    # ─────────────────────────────────────────────
-    week_days = week_strip(day_date)          # Mon–Sun list
+    # Week navigation (Mon–Sun list)
+    week_days = week_strip(day_date)
     prev_week = day_date - timedelta(days=7)
     next_week = day_date + timedelta(days=7)
-    # ─────────────────────────────────────────────
 
     return render_template(
         "day.html",
@@ -106,8 +102,6 @@ def day_view(day_str: str):
         day_str=day_date.isoformat(),
         tasks=day_tasks,
         appointments=appointments,
-
-        # 🔹 ADD THESE
         week_days=week_days,
         prev_week=prev_week,
         next_week=next_week,
