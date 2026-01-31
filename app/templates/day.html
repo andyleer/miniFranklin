@@ -91,22 +91,47 @@
         {% endfor %}
       </div>
 
-      <div class="appts">
-        {% for a in appointments %}
-          <div class="appt">
-            <div class="appt-time">
-              {{ a.start_time.strftime("%H:%M") }}
-              {% if a.end_time %}–{{ a.end_time.strftime("%H:%M") }}{% endif %}
-            </div>
-            <div class="appt-title">{{ a.title }}</div>
-            <form method="post" action="{{ url_for('main.delete_appt', appt_id=a.id) }}">
-              <button class="appt-del" type="submit" aria-label="Delete appointment">×</button>
-            </form>
-          </div>
-        {% else %}
-          <div class="muted">No appointments. The day is a clean sheet.</div>
-        {% endfor %}
+    <div class="appts">
+  {# ladder settings: must match CSS #}
+  {% set START_HOUR = 6 %}
+  {% set END_HOUR = 22 %}
+  {% set HOUR_PX = 48 %}
+  {% set PX_PER_MIN = (HOUR_PX / 60) %}
+
+  {% for a in appointments %}
+    {# compute start minutes from ladder start #}
+    {% set start_minutes = ((a.start_time.hour - START_HOUR) * 60) + a.start_time.minute %}
+
+    {# compute duration if end_time exists; otherwise default #}
+    {% if a.end_time %}
+      {% set duration_minutes = ((a.end_time.hour * 60 + a.end_time.minute) - (a.start_time.hour * 60 + a.start_time.minute)) %}
+    {% else %}
+      {% set duration_minutes = 45 %}
+    {% endif %}
+
+    {# convert to pixels #}
+    {% set top_px = (start_minutes * PX_PER_MIN) %}
+    {% set height_px = (duration_minutes * PX_PER_MIN) %}
+
+    {# clamp/sanity #}
+    {% if height_px < 36 %}{% set height_px = 36 %}{% endif %}
+
+    <div class="appt" style="top: {{ top_px }}px; height: {{ height_px }}px;">
+      <div class="appt-time">
+        {{ a.start_time.strftime("%H:%M") }}
+        {% if a.end_time %}–{{ a.end_time.strftime("%H:%M") }}{% endif %}
       </div>
+
+      <div class="appt-title">{{ a.title }}</div>
+
+      <form method="post" action="{{ url_for('main.delete_appt', appt_id=a.id) }}">
+        <button class="appt-del" type="submit" aria-label="Delete appointment">×</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="muted">No appointments. The day is a clean sheet.</div>
+  {% endfor %}
+</div>
     </div>
   </section>
 
