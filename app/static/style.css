@@ -238,9 +238,9 @@ body{
 
 /* optional: keep the title from wrapping too tall */
 .appt-title{
-  font-size: 14px;
+  font-size: 10px;
   flex:1;
-  line-height: 1.1rem;
+  line-height: 1.5rem;
   overflow: hidden;
 }
 .ladder{ grid-row: span 2; }
