@@ -235,26 +235,22 @@ body{
   height: 48px;
 }
 
-/* APPTS overlay becomes an absolute canvas */
+/* Appointments layer */
 .appts{
   position:absolute;
-  top: 10px;
-  bottom: 10px;
-  left: 82px;
+  inset: 10px;
+  left: 82px;     /* leaves room for hour labels */
   right: 10px;
-
-  /* IMPORTANT: remove flex behavior */
-  display:block;
 }
 
-/* each appointment is placed on the ladder by "top" */
+/* Each appointment becomes a positioned block */
 .appt{
-  position:absolute;
+  position: absolute;
   left: 0;
   right: 0;
 
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   gap:10px;
 
   padding: 10px 10px;
@@ -262,11 +258,8 @@ body{
   border: 1px solid rgb(0 104 97);
   background: rgb(231 240 239);
 
-  /* helps when an appt is short */
-  min-height: 36px;
-
-  /* so the delete button doesn't push height weirdly */
-  box-sizing: border-box;
+  font-size: 12px;   /* your “simple reduce font” request */
+  line-height: 1.1;
 }
 
 /* optional: keep the title from wrapping too tall */
