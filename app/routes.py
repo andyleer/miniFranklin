@@ -75,13 +75,25 @@ def day_view(day_str: str):
         db.session.query(Task)
         .filter(
             Task.user_id == user.id,
-            Task.day_id == day.id,
+            Task.day_id == day.id
         )
         .order_by(Task.priority.asc(), Task.created_at.asc())
         .all()
     )
 
-    # Appointments for this day (Appointment links to Day via day_id)
+    # Optional: "global tasks" (no day_id) if your template expects it
+    global_tasks = (
+        db.session.query(Task)
+        .filter(
+            Task.user_id == user.id,
+            Task.day_id.is_(None),
+            Task.status == "open"
+        )
+        .order_by(Task.priority.asc(), Task.created_at.asc())
+        .all()
+    )
+
+    # Appointments aligned to ladder (day-scoped via day_id)
     appointments = (
         db.session.query(Appointment)
         .filter(Appointment.day_id == day.id)
@@ -89,7 +101,15 @@ def day_view(day_str: str):
         .all()
     )
 
-    # Week navigation (Mon–Sun list)
+    # Notes log
+    notes = (
+        db.session.query(Note)
+        .filter(Note.day_id == day.id)
+        .order_by(Note.created_at.desc())
+        .all()
+    )
+
+    # Week navigation
     week_days = week_strip(day_date)
     prev_week = day_date - timedelta(days=7)
     next_week = day_date + timedelta(days=7)
@@ -100,8 +120,10 @@ def day_view(day_str: str):
         day=day,
         day_date=day_date,
         day_str=day_date.isoformat(),
-        tasks=day_tasks,
+        day_tasks=day_tasks,
+        global_tasks=global_tasks,
         appointments=appointments,
+        notes=notes,
         week_days=week_days,
         prev_week=prev_week,
         next_week=next_week,
@@ -131,7 +153,6 @@ def capture(day_str: str):
       A: order bearings
       B: update forecast
       note: cabinet paint arrived
-      appt 14:00 vendor call
     """
     user = get_or_create_default_user()
     d = date.today() if day_str == "today" else datetime.strptime(day_str, "%Y-%m-%d").date()
@@ -200,6 +221,35 @@ def toggle_task(task_id: int):
     return redirect(url_for("main.day_view", day_str="today"))
 
 
+@bp.post("/task/<int:task_id>/push_next")
+def push_task_next(task_id: int):
+    """
+    Move a task to the next day (tomorrow relative to its current day).
+    If it has no day_id, treat "today" as its base.
+    """
+    user = get_or_create_default_user()
+    task = db.session.get(Task, task_id)
+    if not task:
+        flash("Task not found", "error")
+        return redirect(url_for("main.day_view", day_str="today"))
+
+    # Determine the task's current day date
+    if task.day_id:
+        current_day = db.session.get(Day, task.day_id)
+        base_date = current_day.day_date if current_day else date.today()
+    else:
+        base_date = date.today()
+
+    next_date = base_date + timedelta(days=1)
+    next_day = get_or_create_day(user.id, next_date)
+
+    task.day_id = next_day.id
+    db.session.commit()
+
+    # Send you back to the day you were viewing (base_date), not tomorrow
+    return redirect(url_for("main.day_view", day_str=base_date.isoformat()))
+
+
 @bp.post("/appt/<int:appt_id>/delete")
 def delete_appt(appt_id: int):
     appt = db.session.get(Appointment, appt_id)
@@ -209,4 +259,3 @@ def delete_appt(appt_id: int):
     db.session.delete(appt)
     db.session.commit()
     return redirect(url_for("main.day_view", day_str=day.day_date.isoformat()))
-
