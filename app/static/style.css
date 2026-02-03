@@ -20,11 +20,15 @@ body{
 }
 
 .page{
-  width: 700px;
+  width: 720px;
   min-height: 1920px;
   margin: 0 auto;
   padding: 18px;
 }
+
+/* ─────────────────────────────
+   Topbar + Week nav
+───────────────────────────── */
 
 .topbar{
   display:flex;
@@ -48,12 +52,34 @@ body{
 .date-big{ font-size: 22px; font-weight: 700; }
 .date-sub{ font-size: 13px; color: var(--muted); margin-top:2px; }
 
+.week-nav{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+}
+
+.wkbtn{
+  text-decoration:none;
+  background: rgb(255 255 255);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wkbtn:hover{
+  background: rgb(193 223 220);
+}
+
 .week{
   display:grid;
   grid-template-columns: repeat(7, 1fr);
   gap:8px;
   min-width: 330px;
 }
+
 .weekday{
   text-decoration:none;
   color: var(--ink);
@@ -63,13 +89,18 @@ body{
   text-align:center;
   background: rgb(255 255 255);
 }
+
 .weekday.active{
-  border-color: rgb(0 0 0);
   background: rgb(193 223 220);
-  border: 2px solid ;
+  border: 2px solid rgb(0 0 0);
 }
+
 .wk-dow{ font-size: 11px; color: var(--muted); }
 .wk-num{ font-size: 14px; font-weight: 700; }
+
+/* ─────────────────────────────
+   Capture
+───────────────────────────── */
 
 .capture{
   margin-top: 12px;
@@ -78,7 +109,9 @@ body{
   border: 1px solid var(--line);
   border-radius: 10px;
 }
+
 .capture form{ display:flex; gap:10px; }
+
 .capture-input{
   flex:1;
   background: rgb(255 255 255);
@@ -89,6 +122,7 @@ body{
   font-size: 14px;
   outline: none;
 }
+
 .capture-input:focus{ border-color: rgba(255,59,59,.45); }
 
 .btn{
@@ -100,7 +134,12 @@ body{
   font-weight: 700;
   cursor:pointer;
 }
+
 .btn:hover{ background: rgb(230 233 232); }
+
+/* ─────────────────────────────
+   Main grid/cards
+───────────────────────────── */
 
 .grid{
   margin-top: 12px;
@@ -124,6 +163,7 @@ body{
   color: var(--muted);
   margin-bottom: 10px;
 }
+
 .card-title.sub{ margin-top: 10px; }
 
 .divider{
@@ -132,27 +172,41 @@ body{
   margin: 12px 0;
 }
 
+/* ─────────────────────────────
+   Tasks / Priorities
+───────────────────────────── */
+
 .tasks{ display:grid; grid-template-columns: 1fr; gap: 10px; }
+
 .task-group-title{
   font-size: 12px;
   font-weight: 800;
   margin-bottom: 6px;
 }
-.task-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+
+.task-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
 .task-list.compact{ gap:6px; }
 
 .task{
   display:flex;
-  align-items:center;
-  gap:8px;
+  align-items:flex-start;
+  gap:10px;
   padding: 8px 10px;
   border: 1px solid rgba(234,238,247,.10);
   border-radius: 10px;
   background: rgb(255 255 255);
 }
-.task.done{
-  opacity: .55;
-}
+
+.task.done{ opacity: .55; }
+
 .task-check{
   width: 18px;
   height: 18px;
@@ -162,44 +216,16 @@ body{
   cursor:pointer;
   margin-top: 2px;
 }
+
 .task.done .task-check{
   background: rgb(193 223 220);
   border-color: #9E9E9E;
 }
-.task-text{ 
-  font-size: 14px; 
-  line-height: 1.2rem; 
-  flex: 1;
+
+.task-text{
+  font-size: 14px;
+  line-height: 1.2rem;
 }
-
-/* Push-to-next button for tasks */
-.task{
-  position: relative;
-}
-
-.task-push{
-  margin-left: 0;
-  background: #c1dfdc;
-  border: 1px solid rgb(0 104 97);
-  color: var(--ink);
-  border-radius: 10px;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-}
-
-.task-push:hover{
-  border-color: #FF5722;
-}
-
-
-
-
 
 .pill{
   display:inline-block;
@@ -210,7 +236,12 @@ body{
   color: var(--muted);
   margin-right: 6px;
 }
-/* LADDER: make appointments align to hour lines */
+
+/* ─────────────────────────────
+   Ladder / Schedule
+───────────────────────────── */
+
+.ladder{ grid-row: span 2; }
 
 .ladder-wrap{
   position: relative;
@@ -221,29 +252,46 @@ body{
   background: rgb(255 255 255);
 }
 
+/* hour backdrop grid */
 .hours{
   position:absolute;
   inset: 0;
   padding: 10px;
+  z-index: 1;
 }
 
-/* must match your hour block height */
 .hour{
   display:flex;
   align-items:center;
   gap:10px;
-  height: 48px;
+  height: 48px; /* must match appt_top() math */
 }
 
-/* Appointments layer */
+.hour-label{
+  width: 62px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align:right;
+}
+
+.hour-line{
+  flex:1;
+  height:1px;
+  background: rgb(0 104 97);
+}
+
+/* appointments layer */
 .appts{
   position:absolute;
   inset: 10px;
-  left: 82px;     /* leaves room for hour labels */
+  left: 82px;
   right: 10px;
+
+  /* KEY: do NOT use flex stacking here */
+  z-index: 2;
 }
 
-/* Each appointment becomes a positioned block */
+/* KEY: must be positioned so `top:` works */
 .appt{
   position: absolute;
   left: 0;
@@ -252,44 +300,28 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-
   padding: 10px 10px;
   border-radius: 10px;
   border: 1px solid rgb(0 104 97);
   background: rgb(231 240 239);
 
-  font-size: 12px;   /* your “simple reduce font” request */
-  line-height: 1.1;
+  /* optional: keep it a bit denser */
+  font-size: 13px;
 }
 
-/* optional: keep the title from wrapping too tall */
-.appt-title{
-  font-size: 6px;
-  flex:1;
-  line-height: 1rem;
-  overflow: hidden;
-}
-.ladder{ grid-row: span 2; }
-
-.hour-label{
-  width: 62px;
+.appt-time{
+  font-weight: 800;
   font-size: 12px;
-  color: var(--muted);
-  text-align:right;
+  min-width: 72px;
 }
-.hour-line{
+
+.appt-title{
+  font-size: 13px;
   flex:1;
-  height:1px;
-  background: rgb(0 104 97);
-}
-/* Overlay layer that matches the ladder grid */
-
-  /* IMPORTANT: not a flex column anymore */
-  display:block;
+  line-height: 1.15rem;
 }
 
-.appt-time{ font-weight: 800; font-size: 12px; min-width: 72px; }
-.appt-title{ font-size: 10px; flex:1; }
+/* delete button */
 .appt-del{
   background: #c1dfdc;
   border: 1px solid rgb(0 104 97);
@@ -299,7 +331,12 @@ body{
   height: 28px;
   cursor:pointer;
 }
+
 .appt-del:hover{ border-color: #FF5722; }
+
+/* ─────────────────────────────
+   Inputs / Notes
+───────────────────────────── */
 
 .textline{
   width:100%;
@@ -311,6 +348,7 @@ body{
   font-size: 14px;
   outline:none;
 }
+
 .textarea{
   width:100%;
   min-height: 180px;
@@ -323,7 +361,12 @@ body{
   outline:none;
   resize: vertical;
 }
-.actions{ display:flex; justify-content:flex-end; margin-top:10px; }
+
+.actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+}
 
 .notes{
   display:flex;
@@ -333,14 +376,20 @@ body{
   overflow:auto;
   padding-right: 6px;
 }
+
 .note{
   border: 1px solid rgb(255 255 255 / 10%);
   background: rgb(255 255 255 / 3%);
   border-radius: 10px;
   padding: 10px;
 }
+
 .note-meta{ font-size: 12px; color: var(--muted); margin-bottom: 6px; }
 .note-body{ font-size: 14px; white-space: pre-wrap; }
+
+/* ─────────────────────────────
+   Footer
+───────────────────────────── */
 
 .footer{
   margin-top: 12px;
@@ -351,28 +400,12 @@ body{
   justify-content:center;
   color: var(--muted);
 }
-.link{ color: var(--ink); text-decoration:none; border-bottom: 1px dotted rgba(234,238,247,.35); }
+
+.link{
+  color: var(--ink);
+  text-decoration:none;
+  border-bottom: 1px dotted rgba(234,238,247,.35);
+}
+
 .dot{ opacity:.6; }
 .muted{ color: var(--muted); font-size: 13px; }
-.week-nav{
-  display:flex;
-  gap:8px;
-  justify-content:flex-end;
-  width: 100%;
-}
-
-.wkbtn{
-  text-decoration:none;
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 8px 10px;
-  background: rgb(255 255 255);
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.wkbtn:hover{
-  background: rgb(193 223 220);
-}
-
