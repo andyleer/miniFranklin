@@ -58,26 +58,20 @@ def parse_day_str(day_str: str) -> date:
 
 
 # ---------- ladder positioning ----------
-# These must match your CSS ladder math.
+# MUST match your CSS hour block height.
 LADDER_START_HOUR = 6
-LADDER_PX_PER_HOUR = 48  # if your CSS .hour height is 48px, keep this 48
+LADDER_PX_PER_HOUR = 48  # set to your CSS hour height in px
 
 
+@bp.app_template_global()
 def appt_top(t: time) -> int:
     """
-    Convert a time-of-day into pixel offset from the top of the ladder.
-    06:00 maps to 0px.
+    Convert a time-of-day into pixel offset from top of ladder.
+    06:00 => 0px.
     """
     minutes_from_start = (t.hour - LADDER_START_HOUR) * 60 + t.minute
     px_per_minute = LADDER_PX_PER_HOUR / 60.0
     return int(round(minutes_from_start * px_per_minute))
-
-
-@bp.before_app_request
-def _inject_globals():
-    # Make appt_top available in Jinja templates
-    # (Runs each request; simple and reliable)
-    bp.jinja_env.globals["appt_top"] = appt_top
 
 
 # ---------- routes ----------
@@ -105,7 +99,7 @@ def day_view(day_str: str):
         .all()
     )
 
-    # Global tasks (no day_id), keep only open ones
+    # Global tasks (no day_id), open only
     global_tasks = (
         db.session.query(Task)
         .filter(
@@ -238,7 +232,6 @@ def toggle_task(task_id: int):
 
     db.session.commit()
 
-    # Return to its day if linked, else today
     if task.day_id:
         day = db.session.get(Day, task.day_id)
         return redirect(url_for("main.day_view", day_str=day.day_date.isoformat()))
@@ -248,8 +241,7 @@ def toggle_task(task_id: int):
 @bp.post("/task/<int:task_id>/push-next")
 def push_task_next(task_id: int):
     """
-    Move a task to the next day (preserve priority, keep status as open).
-    Intended for the right-justified "→" button in priorities.
+    Move a task to the next day (used by the right-side arrow button).
     """
     user = get_or_create_default_user()
     task = db.session.get(Task, task_id)
@@ -257,12 +249,12 @@ def push_task_next(task_id: int):
         flash("Task not found", "error")
         return redirect(url_for("main.day_view", day_str="today"))
 
-    # Only allow pushing tasks that belong to this user
+    # basic ownership guard
     if getattr(task, "user_id", None) != user.id:
         flash("Not allowed", "error")
         return redirect(url_for("main.day_view", day_str="today"))
 
-    # If task isn't tied to a day, treat "today" as the base
+    # determine source date
     if task.day_id:
         from_day = db.session.get(Day, task.day_id)
         base_date = from_day.day_date if from_day else date.today()
@@ -277,7 +269,6 @@ def push_task_next(task_id: int):
     task.done_at = None
     db.session.commit()
 
-    # Send user to the day they pushed into (feels nice)
     return redirect(url_for("main.day_view", day_str=target_date.isoformat()))
 
 
