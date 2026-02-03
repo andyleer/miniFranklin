@@ -7,8 +7,8 @@
   <div>
     <div class="brand">FRANKLIN PAGE</div>
     <div class="date">
-      <div class="date-big">{{ day_date.strftime("%A") }}</div>
-      <div class="date-sub">{{ day_date.strftime("%B %d, %Y") }}</div>
+      <div class="date-big">{{ day.day_date.strftime("%A") }}</div>
+      <div class="date-sub">{{ day.day_date.strftime("%B %d, %Y") }}</div>
     </div>
   </div>
 
@@ -20,7 +20,7 @@
 
     <div class="week">
       {% for d in week_days %}
-        <a class="weekday {% if d == day_date %}active{% endif %}"
+        <a class="weekday {% if d == day.day_date %}active{% endif %}"
            href="{{ url_for('main.day_view', day_str=d.strftime('%Y-%m-%d')) }}">
           <div class="wk-dow">{{ d.strftime("%a") }}</div>
           <div class="wk-num">{{ d.day }}</div>
@@ -31,7 +31,7 @@
 </div>
 
 <section class="capture">
-  <form method="post" action="{{ url_for('main.capture', day_str=day_date.isoformat()) }}">
+  <form method="post" action="{{ url_for('main.capture', day_str=day.day_date.isoformat()) }}">
     <input name="capture" class="capture-input" placeholder="Capture: 9:30 call Tony | A: order bearings | note: ..." autocomplete="off" />
     <button class="btn" type="submit">Add</button>
   </form>
@@ -47,12 +47,18 @@
         <div class="task-group">
           <div class="task-group-title">{{ pr }}</div>
           <ul class="task-list">
-            {% for t in tasks if t.priority == pr %}
+            {% for t in day_tasks if t.priority == pr %}
               <li class="task {{ 'done' if t.status == 'done' else '' }}">
                 <form method="post" action="{{ url_for('main.toggle_task', task_id=t.id) }}">
                   <button class="task-check" type="submit" aria-label="Toggle task"></button>
                 </form>
+
                 <div class="task-text">{{ t.text }}</div>
+
+                <!-- PUSH TO NEXT DAY -->
+                <form method="post" action="{{ url_for('main.push_task_next', task_id=t.id) }}">
+                  <button class="task-push" type="submit" aria-label="Push to next day">→</button>
+                </form>
               </li>
             {% endfor %}
           </ul>
@@ -70,6 +76,11 @@
             <button class="task-check" type="submit" aria-label="Toggle task"></button>
           </form>
           <div class="task-text"><span class="pill">{{ t.priority }}</span> {{ t.text }}</div>
+
+          <!-- optional: also allow push on globals -->
+          <form method="post" action="{{ url_for('main.push_task_next', task_id=t.id) }}">
+            <button class="task-push" type="submit" aria-label="Push to next day">→</button>
+          </form>
         </li>
       {% else %}
         <li class="muted">Nothing lurking in the shadows. Nice.</li>
@@ -91,54 +102,29 @@
         {% endfor %}
       </div>
 
-    <div class="appts">
-  {# ladder settings: must match CSS #}
-  {% set START_HOUR = 6 %}
-  {% set END_HOUR = 22 %}
-  {% set HOUR_PX = 48 %}
-  {% set PX_PER_MIN = (HOUR_PX / 60) %}
-
-  {% for a in appointments %}
-    {# compute start minutes from ladder start #}
-    {% set start_minutes = ((a.start_time.hour - START_HOUR) * 60) + a.start_time.minute %}
-
-    {# compute duration if end_time exists; otherwise default #}
-    {% if a.end_time %}
-      {% set duration_minutes = ((a.end_time.hour * 60 + a.end_time.minute) - (a.start_time.hour * 60 + a.start_time.minute)) %}
-    {% else %}
-      {% set duration_minutes = 45 %}
-    {% endif %}
-
-    {# convert to pixels #}
-    {% set top_px = (start_minutes * PX_PER_MIN) %}
-    {% set height_px = (duration_minutes * PX_PER_MIN) %}
-
-    {# clamp/sanity #}
-    {% if height_px < 36 %}{% set height_px = 36 %}{% endif %}
-
-    <div class="appt" style="top: {{ top_px }}px; height: {{ height_px }}px;">
-      <div class="appt-time">
-        {{ a.start_time.strftime("%H:%M") }}
-        {% if a.end_time %}–{{ a.end_time.strftime("%H:%M") }}{% endif %}
+      <div class="appts">
+        {% for a in appointments %}
+          <div class="appt">
+            <div class="appt-time">
+              {{ a.start_time.strftime("%H:%M") }}
+              {% if a.end_time %}–{{ a.end_time.strftime("%H:%M") }}{% endif %}
+            </div>
+            <div class="appt-title">{{ a.title }}</div>
+            <form method="post" action="{{ url_for('main.delete_appt', appt_id=a.id) }}">
+              <button class="appt-del" type="submit" aria-label="Delete appointment">×</button>
+            </form>
+          </div>
+        {% else %}
+          <div class="muted">No appointments. The day is a clean sheet.</div>
+        {% endfor %}
       </div>
-
-      <div class="appt-title">{{ a.title }}</div>
-
-      <form method="post" action="{{ url_for('main.delete_appt', appt_id=a.id) }}">
-        <button class="appt-del" type="submit" aria-label="Delete appointment">×</button>
-      </form>
-    </div>
-  {% else %}
-    <div class="muted">No appointments. The day is a clean sheet.</div>
-  {% endfor %}
-</div>
     </div>
   </section>
 
   <!-- BOTTOM LEFT: focus + wins -->
   <section class="card">
     <div class="card-title">Daily Focus</div>
-    <form method="post" action="{{ url_for('main.update_day', day_str=day_date.isoformat()) }}">
+    <form method="post" action="{{ url_for('main.update_day', day_str=day.day_date.isoformat()) }}">
       <input name="focus" class="textline" value="{{ day.focus or '' }}" placeholder="What makes today a win?" />
       <div class="card-title sub">Wins / Notes to Self</div>
       <textarea name="wins" class="textarea" placeholder="Tiny victories count too.">{{ day.wins or '' }}</textarea>
