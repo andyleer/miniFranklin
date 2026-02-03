@@ -143,8 +143,8 @@ body{
 
 .task{
   display:flex;
-  align-items:flex-start;
-  gap:10px;
+  align-items:center;
+  gap:8px;
   padding: 8px 10px;
   border: 1px solid rgba(234,238,247,.10);
   border-radius: 10px;
@@ -166,7 +166,11 @@ body{
   background: rgb(193 223 220);
   border-color: #9E9E9E;
 }
-.task-text{ font-size: 14px; line-height: 1.2rem; }
+.task-text{ 
+  font-size: 14px; 
+  line-height: 1.2rem; 
+  flex: 1;
+}
 
 /* Push-to-next button for tasks */
 .task{
@@ -174,7 +178,7 @@ body{
 }
 
 .task-push{
-  margin-left: auto;
+  margin-left: 0;
   background: #c1dfdc;
   border: 1px solid rgb(0 104 97);
   color: var(--ink);
