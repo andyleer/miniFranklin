@@ -103,8 +103,8 @@
       </div>
 
       <div class="appts">
-        {% for a in appointments %}
-          <div class="appt">
+       {% for a in appts %}
+          <div class="appt" style="top: {{ appt_top(a.start_time) }}px;">
             <div class="appt-time">
               {{ a.start_time.strftime("%H:%M") }}
               {% if a.end_time %}–{{ a.end_time.strftime("%H:%M") }}{% endif %}
