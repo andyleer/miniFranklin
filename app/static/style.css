@@ -168,6 +168,35 @@ body{
 }
 .task-text{ font-size: 14px; line-height: 1.2rem; }
 
+/* Push-to-next button for tasks */
+.task{
+  position: relative;
+}
+
+.task-push{
+  margin-left: auto;
+  background: #c1dfdc;
+  border: 1px solid rgb(0 104 97);
+  color: var(--ink);
+  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.task-push:hover{
+  border-color: #FF5722;
+}
+
+
+
+
+
 .pill{
   display:inline-block;
   font-size: 11px;
