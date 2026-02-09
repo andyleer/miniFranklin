@@ -409,3 +409,61 @@ body{
 
 .dot{ opacity:.6; }
 .muted{ color: var(--muted); font-size: 13px; }
+
+
+/* --------------------------
+   WEEKLY VIEW
+-------------------------- */
+
+.capture-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.select {
+  height: 40px;
+  border-radius: 10px;
+  padding: 0 10px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.75);
+  font-size: 14px;
+}
+
+.weekly-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.weekly-card .task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.7);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.icon-btn:hover {
+  background: rgba(255,255,255,0.95);
+}
+
+.icon-btn.danger {
+  color: #a33;
+}
