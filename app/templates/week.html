@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% set title = "Weekly • Planner" %}
+
+{% block content %}
+
+<header class="topbar">
+  <div>
+    <div class="brand">FRANKLIN WEEK</div>
+    <div class="date-sub">
+      Week of {{ week_start.strftime("%B %d, %Y") }}
+    </div>
+  </div>
+
+  <div class="week-nav">
+    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
+    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
+  </div>
+</header>
+
+<section class="capture">
+  <form method="post" action="{{ url_for('main.add_weekly_item', week_str=week_start.isoformat()) }}">
+    <input name="text" class="capture-input" placeholder="Add to this week…" />
+    <select name="category" class="select">
+      {% for c in categories %}
+        <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn">Add</button>
+  </form>
+</section>
+
+<main class="weekly-grid">
+  {% for category in categories %}
+    <section class="card">
+      <div class="card-title">{{ category }}</div>
+
+      <ul class="task-list">
+        {% for item in items_by_category[category] %}
+          <li class="task">
+            <div class="task-text">{{ item.text }}</div>
+
+            <div class="task-actions">
+              <form method="post" action="{{ url_for('main.push_weekly_item', item_id=item.id) }}">
+                <button class="icon-btn" title="Push to next week">→</button>
+              </form>
+              <form method="post" action="{{ url_for('main.delete_weekly_item', item_id=item.id) }}">
+                <button class="icon-btn danger">×</button>
+              </form>
+            </div>
+          </li>
+        {% else %}
+          <li class="muted">—</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
+</main>
+
+{% endblock %}
