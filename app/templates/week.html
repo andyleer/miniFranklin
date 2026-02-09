@@ -1,73 +1,51 @@
 {% extends "layout.html" %}
 {% set title = "Weekly • Planner" %}
-
 {% block content %}
 
-<header class="topbar">
-  <div class="topbar-left">
-    <div class="brand">FRANKLIN WEEK</div>
+<div class="topbar">
+  <div>
+    <div class="brand">WEEKLY</div>
     <div class="date">
       <div class="date-big">Week of {{ week_start.strftime("%B %d, %Y") }}</div>
-      <div class="date-sub">Categorized checklist for the week</div>
+      <div class="date-sub">Mon–Sun</div>
     </div>
   </div>
 
-  <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
-    <div class="week-nav">
-      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
-      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
-    </div>
-
-    <div style="display:flex; gap:10px;">
-      <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
-      <a class="wkbtn active" href="{{ url_for('main.week_view', week_str='current') }}">Weekly</a>
-    </div>
+  <div class="week-nav">
+    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.strftime('%Y-%m-%d')) }}">‹ Prev</a>
+    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.strftime('%Y-%m-%d')) }}">Next ›</a>
+    <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
   </div>
-</header>
+</div>
 
-<section class="capture">
-  <form method="post" action="{{ url_for('main.add_weekly_item', week_str=week_start.isoformat()) }}" class="capture-row">
-    <input name="text" class="capture-input" placeholder="Capture: 'Order ink' / 'Guy dentist' / 'Fix door latch'…" autocomplete="off" />
-    <select name="category" class="select">
-      {% for c in categories %}
-        <option value="{{ c }}">{{ c }}</option>
-      {% endfor %}
-    </select>
-    <button class="btn" type="submit">Add</button>
-  </form>
-</section>
+<section class="card">
+  <div class="card-title">Weekly View (starter)</div>
+  <div class="muted">
+    This is a placeholder so the Weekly button works. Next step: your category buckets + dropdown capture.
+  </div>
 
-<main class="weekly-grid">
-  {% for category in categories %}
-    <section class="card weekly-card">
-      <div class="card-title">{{ category }}</div>
+  <div style="margin-top:16px; display:grid; grid-template-columns: repeat(7, 1fr); gap:10px;">
+    {% for row in day_rows %}
+      <div class="card" style="padding:12px;">
+        <div style="font-weight:700;">{{ row.date.strftime("%a") }}</div>
+        <div class="muted" style="margin-bottom:8px;">{{ row.date.strftime("%b %d") }}</div>
 
-      <ul class="task-list compact">
-        {% for item in items_by_category[category] %}
-          <li class="task">
-            <div class="task-text">{{ item.text }}</div>
-
-            <div class="task-actions">
-              <form method="post" action="{{ url_for('main.push_weekly_item', item_id=item.id) }}">
-                <button class="icon-btn" type="submit" title="Push to next week" aria-label="Push to next week">→</button>
-              </form>
-              <form method="post" action="{{ url_for('main.delete_weekly_item', item_id=item.id) }}">
-                <button class="icon-btn danger" type="submit" title="Delete" aria-label="Delete">×</button>
-              </form>
-            </div>
-          </li>
+        <div style="font-size:12px; font-weight:700; margin-top:6px;">APPTS</div>
+        {% for a in row.appts %}
+          <div style="font-size:12px;">{{ a.start_time.strftime("%H:%M") }} {{ a.title }}</div>
         {% else %}
-          <li class="muted">—</li>
+          <div class="muted" style="font-size:12px;">none</div>
         {% endfor %}
-      </ul>
-    </section>
-  {% endfor %}
-</main>
 
-<footer class="footer">
-  <a class="link" href="{{ url_for('main.week_view', week_str='current') }}">Current Week</a>
-  <span class="dot">•</span>
-  <span class="muted">Same vibe, bigger horizon.</span>
-</footer>
+        <div style="font-size:12px; font-weight:700; margin-top:10px;">TASKS</div>
+        {% for t in row.tasks %}
+          <div style="font-size:12px;">[{{ t.priority }}] {{ t.text }}</div>
+        {% else %}
+          <div class="muted" style="font-size:12px;">none</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
 
 {% endblock %}
