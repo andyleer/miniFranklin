@@ -2,7 +2,7 @@
 {% set title = day.day_date.isoformat() ~ " • Planner" %}
 
 {% block content %}
-
+<form method="post" action="{{ url_for('main.push_task_next', task_id=t.id) }}">
 <div class="topbar">
   <div>
     <div class="brand">FRANKLIN PAGE</div>
