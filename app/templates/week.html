@@ -4,47 +4,55 @@
 {% block content %}
 
 <header class="topbar">
-  <div>
+  <div class="topbar-left">
     <div class="brand">FRANKLIN WEEK</div>
-    <div class="date-sub">
-      Week of {{ week_start.strftime("%B %d, %Y") }}
+    <div class="date">
+      <div class="date-big">Week of {{ week_start.strftime("%B %d, %Y") }}</div>
+      <div class="date-sub">Categorized checklist for the week</div>
     </div>
   </div>
 
-  <div class="week-nav">
-    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
-    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
+  <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
+    <div class="week-nav">
+      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
+      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
+      <a class="wkbtn active" href="{{ url_for('main.week_view', week_str='current') }}">Weekly</a>
+    </div>
   </div>
 </header>
 
 <section class="capture">
-  <form method="post" action="{{ url_for('main.add_weekly_item', week_str=week_start.isoformat()) }}">
-    <input name="text" class="capture-input" placeholder="Add to this week…" />
+  <form method="post" action="{{ url_for('main.add_weekly_item', week_str=week_start.isoformat()) }}" class="capture-row">
+    <input name="text" class="capture-input" placeholder="Capture: 'Order ink' / 'Guy dentist' / 'Fix door latch'…" autocomplete="off" />
     <select name="category" class="select">
       {% for c in categories %}
         <option value="{{ c }}">{{ c }}</option>
       {% endfor %}
     </select>
-    <button class="btn">Add</button>
+    <button class="btn" type="submit">Add</button>
   </form>
 </section>
 
 <main class="weekly-grid">
   {% for category in categories %}
-    <section class="card">
+    <section class="card weekly-card">
       <div class="card-title">{{ category }}</div>
 
-      <ul class="task-list">
+      <ul class="task-list compact">
         {% for item in items_by_category[category] %}
           <li class="task">
             <div class="task-text">{{ item.text }}</div>
 
             <div class="task-actions">
               <form method="post" action="{{ url_for('main.push_weekly_item', item_id=item.id) }}">
-                <button class="icon-btn" title="Push to next week">→</button>
+                <button class="icon-btn" type="submit" title="Push to next week" aria-label="Push to next week">→</button>
               </form>
               <form method="post" action="{{ url_for('main.delete_weekly_item', item_id=item.id) }}">
-                <button class="icon-btn danger">×</button>
+                <button class="icon-btn danger" type="submit" title="Delete" aria-label="Delete">×</button>
               </form>
             </div>
           </li>
@@ -55,5 +63,11 @@
     </section>
   {% endfor %}
 </main>
+
+<footer class="footer">
+  <a class="link" href="{{ url_for('main.week_view', week_str='current') }}">Current Week</a>
+  <span class="dot">•</span>
+  <span class="muted">Same vibe, bigger horizon.</span>
+</footer>
 
 {% endblock %}
