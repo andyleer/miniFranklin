@@ -78,3 +78,23 @@ class Note(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     day = db.relationship("Day", backref=db.backref("notes", lazy=True, cascade="all, delete-orphan"))
+
+
+
+# --------------------------
+# NEW: Weekly items
+# --------------------------
+class WeeklyItem(db.Model):
+    __tablename__ = "weekly_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer, nullable=False)
+    week_start = db.Column(db.Date, nullable=False)  # Monday
+
+    category = db.Column(db.String(50), nullable=False)
+    text = db.Column(db.String(300), nullable=False)
+
+    status = db.Column(db.String(20), nullable=False, default="open")  # open|done
+
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
