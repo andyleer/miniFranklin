@@ -6,9 +6,20 @@ import re
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 
 from .db import db
-from .models import User, Day, Appointment, Task, Note
+from .models import User, Day, Appointment, Task, Note, WeeklyItem
 
 bp = Blueprint("main", __name__)
+
+# --------------------------
+# Weekly categories
+# --------------------------
+WEEKLY_CATEGORIES = [
+    "Family",
+    "Main Street",
+    "House",
+    "Work",
+    "Music / Misc",
+]
 
 
 # ---------- helpers ----------
@@ -46,32 +57,14 @@ def parse_time_token(token: str) -> time | None:
 
 
 def week_strip(center: date) -> list[date]:
-    # Monday-start week
+    # Monday-start week strip (Mon..Sun)
     start = center - timedelta(days=center.weekday())
     return [start + timedelta(days=i) for i in range(7)]
 
 
-def parse_day_str(day_str: str) -> date:
-    if day_str == "today":
-        return date.today()
-    return datetime.strptime(day_str, "%Y-%m-%d").date()
-
-
-# ---------- ladder positioning ----------
-# MUST match your CSS hour block height.
-LADDER_START_HOUR = 6
-LADDER_PX_PER_HOUR = 48  # set to your CSS hour height in px
-
-
-@bp.app_template_global()
-def appt_top(t: time) -> int:
-    """
-    Convert a time-of-day into pixel offset from top of ladder.
-    06:00 => 0px.
-    """
-    minutes_from_start = (t.hour - LADDER_START_HOUR) * 60 + t.minute
-    px_per_minute = LADDER_PX_PER_HOUR / 60.0
-    return int(round(minutes_from_start * px_per_minute))
+def week_start_for(d: date) -> date:
+    # Monday
+    return d - timedelta(days=d.weekday())
 
 
 # ---------- routes ----------
@@ -80,15 +73,23 @@ def index():
     return redirect(url_for("main.day_view", day_str="today"))
 
 
+# --------------------------
+# DAY VIEW
+# --------------------------
 @bp.get("/day/<day_str>")
 def day_view(day_str: str):
     user = get_or_create_default_user()
-    day_date = parse_day_str(day_str)
 
-    # Ensure a Day row exists
+    # Parse day
+    if day_str == "today":
+        day_date = date.today()
+    else:
+        day_date = datetime.strptime(day_str, "%Y-%m-%d").date()
+
+    # Ensure Day exists
     day = get_or_create_day(user.id, day_date)
 
-    # Tasks for this day
+    # Day tasks
     day_tasks = (
         db.session.query(Task)
         .filter(
@@ -99,7 +100,7 @@ def day_view(day_str: str):
         .all()
     )
 
-    # Global tasks (no day_id), open only
+    # Global tasks (optional)
     global_tasks = (
         db.session.query(Task)
         .filter(
@@ -111,7 +112,7 @@ def day_view(day_str: str):
         .all()
     )
 
-    # Appointments for this day
+    # Appointments
     appts = (
         db.session.query(Appointment)
         .filter(Appointment.day_id == day.id)
@@ -119,7 +120,7 @@ def day_view(day_str: str):
         .all()
     )
 
-    # Notes for this day
+    # Notes
     notes = (
         db.session.query(Note)
         .filter(Note.day_id == day.id)
@@ -127,7 +128,7 @@ def day_view(day_str: str):
         .all()
     )
 
-    # Week navigation
+    # Week navigation (for the day header strip)
     week_days = week_strip(day_date)
     prev_week = day_date - timedelta(days=7)
     next_week = day_date + timedelta(days=7)
@@ -151,7 +152,7 @@ def day_view(day_str: str):
 @bp.post("/day/<day_str>/update")
 def update_day(day_str: str):
     user = get_or_create_default_user()
-    d = parse_day_str(day_str)
+    d = date.today() if day_str == "today" else datetime.strptime(day_str, "%Y-%m-%d").date()
     day = get_or_create_day(user.id, d)
 
     day.focus = request.form.get("focus", "").strip() or None
@@ -173,7 +174,7 @@ def capture(day_str: str):
       note: cabinet paint arrived
     """
     user = get_or_create_default_user()
-    d = parse_day_str(day_str)
+    d = date.today() if day_str == "today" else datetime.strptime(day_str, "%Y-%m-%d").date()
     day = get_or_create_day(user.id, d)
 
     raw = (request.form.get("capture") or "").strip()
@@ -232,44 +233,11 @@ def toggle_task(task_id: int):
 
     db.session.commit()
 
+    # Return to its day if linked, else today
     if task.day_id:
         day = db.session.get(Day, task.day_id)
         return redirect(url_for("main.day_view", day_str=day.day_date.isoformat()))
     return redirect(url_for("main.day_view", day_str="today"))
-
-
-@bp.post("/task/<int:task_id>/push-next")
-def push_task_next(task_id: int):
-    """
-    Move a task to the next day (used by the right-side arrow button).
-    """
-    user = get_or_create_default_user()
-    task = db.session.get(Task, task_id)
-    if not task:
-        flash("Task not found", "error")
-        return redirect(url_for("main.day_view", day_str="today"))
-
-    # basic ownership guard
-    if getattr(task, "user_id", None) != user.id:
-        flash("Not allowed", "error")
-        return redirect(url_for("main.day_view", day_str="today"))
-
-    # determine source date
-    if task.day_id:
-        from_day = db.session.get(Day, task.day_id)
-        base_date = from_day.day_date if from_day else date.today()
-    else:
-        base_date = date.today()
-
-    target_date = base_date + timedelta(days=1)
-    target_day = get_or_create_day(user.id, target_date)
-
-    task.day_id = target_day.id
-    task.status = "open"
-    task.done_at = None
-    db.session.commit()
-
-    return redirect(url_for("main.day_view", day_str=target_date.isoformat()))
 
 
 @bp.post("/appt/<int:appt_id>/delete")
@@ -277,11 +245,94 @@ def delete_appt(appt_id: int):
     appt = db.session.get(Appointment, appt_id)
     if not appt:
         return redirect(url_for("main.index"))
-
     day = db.session.get(Day, appt.day_id)
     db.session.delete(appt)
     db.session.commit()
+    return redirect(url_for("main.day_view", day_str=day.day_date.isoformat()))
 
-    if day:
-        return redirect(url_for("main.day_view", day_str=day.day_date.isoformat()))
-    return redirect(url_for("main.day_view", day_str="today"))
+
+# --------------------------
+# WEEKLY VIEW  ✅ (this is what your error says is missing)
+# --------------------------
+@bp.get("/week/<week_str>")
+def week_view(week_str: str):
+    user = get_or_create_default_user()
+
+    if week_str == "current":
+        wk = week_start_for(date.today())
+    else:
+        wk = datetime.strptime(week_str, "%Y-%m-%d").date()
+        wk = week_start_for(wk)
+
+    items = (
+        db.session.query(WeeklyItem)
+        .filter(WeeklyItem.user_id == user.id, WeeklyItem.week_start == wk)
+        .order_by(WeeklyItem.created_at.asc())
+        .all()
+    )
+
+    items_by_category: dict[str, list[WeeklyItem]] = {c: [] for c in WEEKLY_CATEGORIES}
+    for it in items:
+        if it.category in items_by_category:
+            items_by_category[it.category].append(it)
+        else:
+            items_by_category["Music / Misc"].append(it)
+
+    return render_template(
+        "week.html",
+        user=user,
+        week_start=wk,
+        prev_week=wk - timedelta(days=7),
+        next_week=wk + timedelta(days=7),
+        categories=WEEKLY_CATEGORIES,
+        items_by_category=items_by_category,
+    )
+
+
+@bp.post("/week/<week_str>/add")
+def add_weekly_item(week_str: str):
+    user = get_or_create_default_user()
+
+    if week_str == "current":
+        wk = week_start_for(date.today())
+    else:
+        wk = week_start_for(datetime.strptime(week_str, "%Y-%m-%d").date())
+
+    text = (request.form.get("text") or "").strip()
+    category = (request.form.get("category") or "").strip()
+
+    if text:
+        if category not in WEEKLY_CATEGORIES:
+            category = "Music / Misc"
+        db.session.add(
+            WeeklyItem(
+                user_id=user.id,
+                week_start=wk,
+                category=category,
+                text=text,
+            )
+        )
+        db.session.commit()
+
+    return redirect(url_for("main.week_view", week_str=wk.isoformat()))
+
+
+@bp.post("/week/item/<int:item_id>/delete")
+def delete_weekly_item(item_id: int):
+    item = db.session.get(WeeklyItem, item_id)
+    if not item:
+        return redirect(url_for("main.week_view", week_str="current"))
+    wk = item.week_start
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for("main.week_view", week_str=wk.isoformat()))
+
+
+@bp.post("/week/item/<int:item_id>/next")
+def push_weekly_item(item_id: int):
+    item = db.session.get(WeeklyItem, item_id)
+    if not item:
+        return redirect(url_for("main.week_view", week_str="current"))
+    item.week_start = item.week_start + timedelta(days=7)
+    db.session.commit()
+    return redirect(url_for("main.week_view", week_str="current"))
