@@ -320,5 +320,7 @@ def push_task_next(task_id: int):
     task.day_id = next_day.id
     db.session.commit()
 
+
+
     # Go back to the day we were viewing
     return redirect(url_for("main.day_view", day_str=current_day_date.isoformat()))
