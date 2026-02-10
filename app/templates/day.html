@@ -15,8 +15,8 @@
   <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
     <div class="week-nav">
       <a class="wkbtn" href="{{ url_for('main.day_view', day_str=prev_week.strftime('%Y-%m-%d')) }}">‹ Prev</a>
-      <a class="wkbtn" href="{{ url_for('main.week_view', week_str='current') }}">Weekly</a>
       <a class="wkbtn" href="{{ url_for('main.day_view', day_str=next_week.strftime('%Y-%m-%d')) }}">Next ›</a>
+      <a class="wkbtn" href="{{ url_for('main.week_view', week_str='current') }}">Weekly</a>
     </div>
 
     <div class="week">
