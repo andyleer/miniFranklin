@@ -497,3 +497,80 @@ body{
   opacity: 1;
 }
 
+/* Week capture row: dropdown + input aligned */
+.capture-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.capture-select {
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.8);
+  font-size: 13px;
+}
+
+/* Weekly initiatives grid */
+.week-goals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.goal-col {
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(255,255,255,0.55);
+}
+
+.goal-col-title {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  opacity: 0.85;
+}
+
+/* Task action buttons to the far right */
+.task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-text {
+  flex: 1;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 58px;
+}
+
+.task-push {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.65;
+}
+
+.task-push:hover {
+  opacity: 1;
+}
+
+/* Responsive-ish: if it gets tight */
+@media (max-width: 900px) {
+  .week-goals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
