@@ -1,51 +1,124 @@
 {% extends "layout.html" %}
-{% set title = "Weekly • Planner" %}
+{% set title = "Week of " ~ week_start.isoformat() ~ " • Planner" %}
+
 {% block content %}
 
 <div class="topbar">
   <div>
-    <div class="brand">WEEKLY</div>
+    <div class="brand">FRANKLIN PAGE</div>
     <div class="date">
       <div class="date-big">Week of {{ week_start.strftime("%B %d, %Y") }}</div>
-      <div class="date-sub">Mon–Sun</div>
+      <div class="date-sub">Your seven-day runway, organized.</div>
     </div>
   </div>
 
-  <div class="week-nav">
-    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.strftime('%Y-%m-%d')) }}">‹ Prev</a>
-    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.strftime('%Y-%m-%d')) }}">Next ›</a>
-    <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
+  <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
+    <div class="week-nav">
+      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.strftime('%Y-%m-%d')) }}">‹ Prev</a>
+      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.strftime('%Y-%m-%d')) }}">Next ›</a>
+      <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
+    </div>
+
+    <div class="week">
+      {% for d in week_days %}
+        <a class="weekday" href="{{ url_for('main.day_view', day_str=d.strftime('%Y-%m-%d')) }}">
+          <div class="wk-dow">{{ d.strftime("%a") }}</div>
+          <div class="wk-num">{{ d.day }}</div>
+        </a>
+      {% endfor %}
+    </div>
   </div>
 </div>
 
-<section class="card">
-  <div class="card-title">Weekly View (starter)</div>
-  <div class="muted">
-    This is a placeholder so the Weekly button works. Next step: your category buckets + dropdown capture.
-  </div>
+<section class="capture">
+  <form method="post" action="{{ url_for('main.add_week_goal', week_str=week_start.isoformat()) }}" class="capture-row">
+    <select name="category" class="capture-select">
+      {% for c in goal_categories %}
+        <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
 
-  <div style="margin-top:16px; display:grid; grid-template-columns: repeat(7, 1fr); gap:10px;">
-    {% for row in day_rows %}
-      <div class="card" style="padding:12px;">
-        <div style="font-weight:700;">{{ row.date.strftime("%a") }}</div>
-        <div class="muted" style="margin-bottom:8px;">{{ row.date.strftime("%b %d") }}</div>
-
-        <div style="font-size:12px; font-weight:700; margin-top:6px;">APPTS</div>
-        {% for a in row.appts %}
-          <div style="font-size:12px;">{{ a.start_time.strftime("%H:%M") }} {{ a.title }}</div>
-        {% else %}
-          <div class="muted" style="font-size:12px;">none</div>
-        {% endfor %}
-
-        <div style="font-size:12px; font-weight:700; margin-top:10px;">TASKS</div>
-        {% for t in row.tasks %}
-          <div style="font-size:12px;">[{{ t.priority }}] {{ t.text }}</div>
-        {% else %}
-          <div class="muted" style="font-size:12px;">none</div>
-        {% endfor %}
-      </div>
-    {% endfor %}
-  </div>
+    <input name="text" class="capture-input" placeholder="Weekly initiative… (example: Book orthodontist consult)" autocomplete="off" />
+    <button class="btn" type="submit">Add</button>
+  </form>
 </section>
+
+<main class="grid">
+  <!-- TOP: weekly summary -->
+  <section class="card">
+    <div class="card-title">Weekly Summary</div>
+
+    <div class="subgrid">
+      <div class="subcard">
+        <div class="card-title sub">Tasks (this week)</div>
+        <ul class="task-list compact">
+          {% for t in week_tasks %}
+            <li class="task {{ 'done' if t.status == 'done' else '' }}">
+              <div class="task-text"><span class="pill">{{ t.priority }}</span> {{ t.text }}</div>
+            </li>
+          {% else %}
+            <li class="muted">No tasks captured for this week (yet).</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="subcard">
+        <div class="card-title sub">Appointments (this week)</div>
+        <div class="notes">
+          {% for a in week_appts %}
+            <div class="note">
+              <div class="note-meta">{{ a.start_time.strftime("%H:%M") }}</div>
+              <div class="note-body">{{ a.title }}</div>
+            </div>
+          {% else %}
+            <div class="muted">No appointments listed.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW: weekly initiatives -->
+  <section class="card">
+    <div class="card-title">Weekly Initiatives</div>
+    <div class="muted" style="margin-bottom:10px;">
+      Bigger rocks for the week. Not tied to a specific day.
+    </div>
+
+    <div class="week-goals-grid">
+      {% for cat in goal_categories %}
+        <div class="goal-col">
+          <div class="goal-col-title">{{ cat }}</div>
+
+          <ul class="task-list compact">
+            {% for g in goals_by_cat[cat] %}
+              <li class="task">
+                <div class="task-text">{{ g.text }}</div>
+
+                <div class="task-actions">
+                  <form method="post" action="{{ url_for('main.push_week_goal_next', goal_id=g.id) }}">
+                    <button class="task-push" type="submit" aria-label="Push to next week">→</button>
+                  </form>
+
+                  <form method="post" action="{{ url_for('main.delete_week_goal', goal_id=g.id) }}">
+                    <button class="appt-del" type="submit" aria-label="Delete">×</button>
+                  </form>
+                </div>
+              </li>
+            {% else %}
+              <li class="muted">—</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <a class="link" href="{{ url_for('main.week_view', week_str='current') }}">Current Week</a>
+  <span class="dot">•</span>
+  <a class="link" href="{{ url_for('main.day_view', day_str='today') }}">Today</a>
+</footer>
 
 {% endblock %}
