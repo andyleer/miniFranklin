@@ -151,8 +151,8 @@ body{
 .card{
   background: rgb(231 240 239);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: 6px;
+  padding: 12px 14px 10px 10px;
   backdrop-filter: blur(8px);
 }
 
