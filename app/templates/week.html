@@ -50,7 +50,9 @@
     <div class="card-title">Weekly Initiatives</div>
 
     <!-- capture row -->
-    <form class="week-capture" method="post" action="{{ url_for('main.week_capture_goal', week_str=week_str) }}">
+    <!--<form class="week-capture" method="post" action="{{ url_for('main.week_capture_goal', week_str=week_str) }}">-->
+      <form class="week-capture" method="post" action="{{ url_for('main.add_week_goal', week_str=week_str) }}">
+
       <select name="category" class="select">
         <optgroup label="Left Column">
           <option value="Family">Family</option>
