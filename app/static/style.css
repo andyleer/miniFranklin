@@ -149,6 +149,7 @@ body{
 }
 
 .card{
+  margin-top: 12px;
   background: rgb(231 240 239);
   border: 1px solid var(--line);
   border-radius: 6px;
