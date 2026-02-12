@@ -278,7 +278,7 @@ def week_view(week_str: str):
         )
 
     # NEW: weekly initiatives/goals
-    categories = ["Family", "Work", "Main Street", "House", "Music", "Projects"]
+    categories = ["Family", "Work", "Main Street", "House", "Music", "Robot Speakers", "Projects"]
     goals = (
         db.session.query(WeeklyGoal)
         .filter(WeeklyGoal.user_id == user.id, WeeklyGoal.week_start == wk_start)
