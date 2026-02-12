@@ -5,21 +5,22 @@
 
 <div class="wrap">
 
-  <div class="topbar">
-    <div class="navleft">
-      <a class="navbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
-      <a class="navbtn" href="{{ url_for('main.week_view', week_str='current') }}">Current</a>
-      <a class="navbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
-    </div>
-    <div class="navright">
-      <a class="navbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
-    </div>
+<header class="wk-head">
+  <div class="wk-head-left">
+    <div class="wk-head-title">Weekly</div>
+    <div class="wk-head-sub">Week of {{ week_start.isoformat() }}</div>
   </div>
 
-  <div class="page-title">
-    <div class="h1">Weekly</div>
-    <div class="h2">Week of {{ week_start.isoformat() }}</div>
+  <nav class="wk-head-nav" aria-label="Week navigation">
+    <a class="wk-chip" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
+    <a class="wk-chip wk-chip-primary" href="{{ url_for('main.week_view', week_str='current') }}">Current</a>
+    <a class="wk-chip" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
+  </nav>
+
+  <div class="wk-head-right">
+    <a class="wk-chip" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
   </div>
+</header>
 
   <!-- ─────────────────────────────────────────────
        WEEKLY INITIATIVES (TOP)
