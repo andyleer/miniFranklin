@@ -431,7 +431,7 @@ body{
   border-bottom: 1px dotted rgba(234,238,247,.35);
 }
 .dot{ opacity:.6; }
-.muted{ color: var(--muted); font-size: 13px; }
+.muted{ color: var(--muted); font-size: 10px; }
 .muted.small{ font-size:12px; opacity:0.65; }
 
 /* ===================================================================
