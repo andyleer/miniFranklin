@@ -100,24 +100,19 @@ class WeeklyItem(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
-
-# ─────────────────────────────────────────────────────────────
-# NEW: weekly “initiative/goals” items (not tied to a specific day)
-# ─────────────────────────────────────────────────────────────
 class WeeklyGoal(db.Model):
+    __tablename__ = "weekly_goal"
+
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    # IMPORTANT: no ForeignKey here (avoids table-name mismatch)
+    user_id = db.Column(db.Integer, nullable=False, index=True)
 
-    # Monday-start “week key”
     week_start = db.Column(db.Date, nullable=False, index=True)
-
-    # Family/Work/Main Street/House/Music/Projects
     category = db.Column(db.String(32), nullable=False)
-
     text = db.Column(db.Text, nullable=False)
 
-    status = db.Column(db.String(10), nullable=False, default="open")  # open/done (optional use later)
+    status = db.Column(db.String(10), nullable=False, default="open")
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     __table_args__ = (
