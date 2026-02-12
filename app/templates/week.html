@@ -1,153 +1,150 @@
-{% extends "layout.html" %}
 {% set title = "Week of " ~ week_start.isoformat() ~ " • Planner" %}
+{% extends "layout.html" %}
 
 {% block content %}
 
-<div class="topbar">
-  <div>
-    <div class="brand">FRANKLIN PAGE</div>
-    <div class="date">
-      <div class="date-big">Week of {{ week_start.strftime("%B %d, %Y") }}</div>
-      <div class="date-sub">Your seven-day runway, organized.</div>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="navleft">
+      <a class="navbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
+      <a class="navbtn" href="{{ url_for('main.week_view', week_str='current') }}">Current</a>
+      <a class="navbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
+    </div>
+    <div class="navright">
+      <a class="navbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
     </div>
   </div>
 
-  <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
-    <div class="week-nav">
-      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.strftime('%Y-%m-%d')) }}">‹ Prev</a>
-      <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.strftime('%Y-%m-%d')) }}">Next ›</a>
-      <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
+  <div class="page-title">
+    <div class="h1">Weekly</div>
+    <div class="h2">Week of {{ week_start.isoformat() }}</div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       WEEKLY INITIATIVES (TOP)
+       2 columns only:
+         LEFT  = Family / House / Music
+         RIGHT = Work / Projects / Main Street
+       ───────────────────────────────────────────── -->
+  <section class="card">
+    <div class="card-hd">
+      <div class="card-title">Weekly Initiatives</div>
+
+      <form class="wk-capture" method="post" action="{{ url_for('main.add_week_goal', week_str=week_str) }}">
+        <select name="category" class="wk-select" required>
+          <option value="" disabled selected>Category…</option>
+          {% for c in goal_categories %}
+            <option value="{{ c }}">{{ c }}</option>
+          {% endfor %}
+        </select>
+        <input class="wk-input" type="text" name="text" placeholder="Add a weekly initiative…" required />
+        <button class="wk-add" type="submit">Add</button>
+      </form>
     </div>
 
-    <div class="week">
-      {% for d in week_days %}
-        <a class="weekday" href="{{ url_for('main.day_view', day_str=d.strftime('%Y-%m-%d')) }}">
-          <div class="wk-dow">{{ d.strftime("%a") }}</div>
-          <div class="wk-num">{{ d.day }}</div>
-        </a>
-      {% endfor %}
+    <div class="wk-grid-2">
+      <!-- LEFT COLUMN -->
+      <div class="wk-col">
+        {% for cat in ["Family", "House", "Music"] %}
+          <div class="wk-box">
+            <div class="wk-box-hd">{{ cat }}</div>
+            <div class="wk-list">
+              {% for g in goals_by_cat.get(cat, []) %}
+                <div class="wk-item">
+                  <div class="wk-text">{{ g.text }}</div>
+                  <div class="wk-actions">
+                    <form method="post" action="{{ url_for('main.push_week_goal_next', goal_id=g.id) }}">
+                      <button class="mini-btn" type="submit" title="Move to next week">→</button>
+                    </form>
+                    <form method="post" action="{{ url_for('main.delete_week_goal', goal_id=g.id) }}">
+                      <button class="mini-btn danger" type="submit" title="Delete">×</button>
+                    </form>
+                  </div>
+                </div>
+              {% else %}
+                <div class="wk-empty"> </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="wk-col">
+        {% for cat in ["Work", "Projects", "Main Street"] %}
+          <div class="wk-box">
+            <div class="wk-box-hd">{{ cat }}</div>
+            <div class="wk-list">
+              {% for g in goals_by_cat.get(cat, []) %}
+                <div class="wk-item">
+                  <div class="wk-text">{{ g.text }}</div>
+                  <div class="wk-actions">
+                    <form method="post" action="{{ url_for('main.push_week_goal_next', goal_id=g.id) }}">
+                      <button class="mini-btn" type="submit" title="Move to next week">→</button>
+                    </form>
+                    <form method="post" action="{{ url_for('main.delete_week_goal', goal_id=g.id) }}">
+                      <button class="mini-btn danger" type="submit" title="Delete">×</button>
+                    </form>
+                  </div>
+                </div>
+              {% else %}
+                <div class="wk-empty"> </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────
+       WEEK SUMMARY (BELOW)
+       ───────────────────────────────────────────── -->
+  <section class="card">
+    <div class="card-hd">
+      <div class="card-title">Weekly Summary</div>
+      <div class="card-sub">Day-linked tasks and appointments for this week</div>
+    </div>
+
+    <div class="wk-summary">
+      <div class="wk-split">
+        <div class="wk-pane">
+          <div class="wk-pane-hd">Appointments</div>
+          {% if week_appts %}
+            <div class="wk-sum-list">
+              {% for a in week_appts %}
+                <div class="wk-sum-row">
+                  <div class="wk-sum-left">{{ "%02d:%02d"|format(a.start_time.hour, a.start_time.minute) }}</div>
+                  <div class="wk-sum-mid">{{ a.title }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="wk-empty"> </div>
+          {% endif %}
+        </div>
+
+        <div class="wk-pane">
+          <div class="wk-pane-hd">Tasks</div>
+          {% if week_tasks %}
+            <div class="wk-sum-list">
+              {% for t in week_tasks %}
+                <div class="wk-sum-row">
+                  <div class="wk-sum-left">{{ t.priority }}</div>
+                  <div class="wk-sum-mid">{{ t.text }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="wk-empty"> </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </section>
+
 </div>
-
-<section class="capture">
-  <form method="post" action="{{ url_for('main.add_week_goal', week_str=week_start.isoformat()) }}" class="capture-row">
-    <select name="category" class="capture-select">
-      {% for c in goal_categories %}
-        <option value="{{ c }}">{{ c }}</option>
-      {% endfor %}
-    </select>
-
-    <input name="text" class="capture-input" placeholder="Weekly initiative… (example: Book orthodontist consult)" autocomplete="off" />
-    <button class="btn" type="submit">Add</button>
-  </form>
-</section>
-
-<main class="weekpage">
-
-  <!-- 1) Weekly Initiatives FIRST -->
-  <section class="card week-init">
-    <div class="card-title">Weekly Initiatives</div>
-
-    <!-- capture row -->
-    <!--<form class="week-capture" method="post" action="{{ url_for('main.week_capture_goal', week_str=week_str) }}">-->
-      <form class="week-capture" method="post" action="{{ url_for('main.add_week_goal', week_str=week_str) }}">
-
-      <select name="category" class="select">
-        <optgroup label="Left Column">
-          <option value="Family">Family</option>
-          <option value="House">House</option>
-          <option value="Music">Music</option>
-        </optgroup>
-        <optgroup label="Right Column">
-          <option value="Work">Work</option>
-          <option value="Projects">Projects</option>
-          <option value="Main Street">Main Street</option>
-        </optgroup>
-      </select>
-
-      <input name="text" class="capture-input" placeholder="Add a weekly goal..." autocomplete="off" />
-      <button class="btn" type="submit">Add</button>
-    </form>
-
-    <!-- exactly TWO columns -->
-    <div class="goal-grid">
-
-      <!-- LEFT column: Family / House / Music -->
-      <div class="goal-col">
-        {% for cat in ['Family','House','Music'] %}
-          <div class="goal-group">
-            <div class="goal-group-title">{{ cat }}</div>
-
-            <ul class="goal-list">
-              {% for g in goals_by_cat.get(cat, []) %}
-                <li class="goal-item">
-                  <div class="goal-text">{{ g.text }}</div>
-
-                  <div class="goal-actions">
-                    <form method="post" action="{{ url_for('main.week_goal_push_next', goal_id=g.id) }}">
-                      <button class="mini-btn" type="submit" title="Push to next week">→</button>
-                    </form>
-                    <form method="post" action="{{ url_for('main.week_goal_delete', goal_id=g.id) }}">
-                      <button class="mini-btn danger" type="submit" title="Delete">×</button>
-                    </form>
-                  </div>
-                </li>
-              {% else %}
-                <li class="muted small">No items.</li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endfor %}
-      </div>
-
-      <!-- RIGHT column: Work / Projects / Main Street -->
-      <div class="goal-col">
-        {% for cat in ['Work','Projects','Main Street'] %}
-          <div class="goal-group">
-            <div class="goal-group-title">{{ cat }}</div>
-
-            <ul class="goal-list">
-              {% for g in goals_by_cat.get(cat, []) %}
-                <li class="goal-item">
-                  <div class="goal-text">{{ g.text }}</div>
-
-                  <div class="goal-actions">
-                    <form method="post" action="{{ url_for('main.week_goal_push_next', goal_id=g.id) }}">
-                      <button class="mini-btn" type="submit" title="Push to next week">→</button>
-                    </form>
-                    <form method="post" action="{{ url_for('main.week_goal_delete', goal_id=g.id) }}">
-                      <button class="mini-btn danger" type="submit" title="Delete">×</button>
-                    </form>
-                  </div>
-                </li>
-              {% else %}
-                <li class="muted small">No items.</li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endfor %}
-      </div>
-
-    </div>
-  </section>
-
-  <!-- 2) Weekly Summary SECOND -->
-  <section class="card week-summary">
-    <div class="card-title">Weekly Summary</div>
-
-    <!-- keep your existing summary UI here exactly as-is -->
-    {{ super() if false else '' }}
-    <!-- Replace above line with your current summary markup -->
-  </section>
-
-</main>
-
-
-<footer class="footer">
-  <a class="link" href="{{ url_for('main.week_view', week_str='current') }}">Current Week</a>
-  <span class="dot">•</span>
-  <a class="link" href="{{ url_for('main.day_view', day_str='today') }}">Today</a>
-</footer>
 
 {% endblock %}
