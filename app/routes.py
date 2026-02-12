@@ -251,8 +251,7 @@ def week_view(week_str: str):
     prev_week = wk_start - timedelta(days=7)
     next_week = wk_start + timedelta(days=7)
 
-    # Whatever your “summary of everything” already is:
-    # This pulls all day-linked tasks for the week as a simple summary example.
+    # Summary of everything (tasks/appts that are linked to days in that week)
     week_day_rows = (
         db.session.query(Day)
         .filter(Day.user_id == user.id, Day.day_date >= wk_start, Day.day_date <= (wk_start + timedelta(days=6)))
@@ -277,16 +276,19 @@ def week_view(week_str: str):
             .all()
         )
 
-    # NEW: weekly initiatives/goals
-    categories = ["Family", "Work", "Main Street", "House", "Music", "Robot Speakers", "Projects"]
+    # Weekly initiatives/goals (your requested categories)
+    categories = ["Family", "Work", "Main Street", "House", "Music", "Projects"]
+
     goals = (
         db.session.query(WeeklyGoal)
         .filter(WeeklyGoal.user_id == user.id, WeeklyGoal.week_start == wk_start)
         .order_by(WeeklyGoal.created_at.asc())
         .all()
     )
+
     goals_by_cat: dict[str, list[WeeklyGoal]] = {c: [] for c in categories}
     for g in goals:
+        # If older data has a category not in our fixed list, still show it rather than losing it
         goals_by_cat.setdefault(g.category, []).append(g)
 
     return render_template(
@@ -298,8 +300,8 @@ def week_view(week_str: str):
         next_week=next_week,
         week_tasks=week_tasks,
         week_appts=week_appts,
+        week_str=wk_start.isoformat(),  # IMPORTANT: used by the add form
 
-        # NEW
         goal_categories=categories,
         goals_by_cat=goals_by_cat,
     )
@@ -344,6 +346,8 @@ def push_week_goal_next(goal_id: int):
     if not goal:
         return redirect(url_for("main.week_view", week_str="current"))
 
+    old_week = goal.week_start
     goal.week_start = goal.week_start + timedelta(days=7)
     db.session.commit()
-    return redirect(url_for("main.week_view", week_str=(goal.week_start - timedelta(days=7)).isoformat()))
+
+    return redirect(url_for("main.week_view", week_str=old_week.isoformat()))
