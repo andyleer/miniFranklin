@@ -7,16 +7,16 @@
 
 <header class="topbar">
   <div class="wk-head-left">
-    <div> ==0
     <div class="brand"> Franklin Weekly </div>
-    <div class="wk-head-sub">Week of {{ week_start.isoformat() }}</div>
-    </div>
+    <div class="date-sub">Week of {{ week_start.isoformat() }}</div>
   </div>
 
+
+  
   <nav class="wk-head-nav" aria-label="Week navigation">
-    <a class="wk-chip" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
-    <a class="wk-chip wk-chip-primary" href="{{ url_for('main.week_view', week_str='current') }}">Current</a>
-    <a class="wk-chip" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
+    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
+    <a class="wkbtn wk-chip-primary" href="{{ url_for('main.week_view', week_str='current') }}">Current</a>
+    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
   </nav>
 
   <div class="wk-head-right">
