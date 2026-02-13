@@ -11,6 +11,19 @@ from .models import User, Day, Appointment, Task, Note, WeeklyGoal
 bp = Blueprint("main", __name__)
 
 
+# routes.py (add near the top, after bp = Blueprint(...))
+
+HOUR_HEIGHT_PX = 48
+DISPLAY_START_HOUR = 6
+
+@bp.app_template_global()
+def appt_top(t: time) -> int:
+    if not t:
+        return 0
+    minutes_from_start = (t.hour - DISPLAY_START_HOUR) * 60 + t.minute
+    return int(minutes_from_start * (HOUR_HEIGHT_PX / 60.0))
+
+
 # ---------- helpers ----------
 def get_or_create_default_user() -> User:
     user = db.session.query(User).first()
