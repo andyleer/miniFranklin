@@ -1,3 +1,7 @@
+{# =========================
+   templates/day.html
+   (unchanged structurally; kept as your leading example)
+   ========================= #}
 {% extends "layout.html" %}
 {% set title = day.day_date.isoformat() ~ " • Planner" %}
 
@@ -104,7 +108,7 @@
       </div>
 
       <div class="appts">
-       {% for a in appts %}
+        {% for a in appts %}
           <div class="appt" style="top: {{ appt_top(a.start_time) }}px;">
             <div class="appt-time">
               {{ a.start_time.strftime("%H:%M") }}
@@ -148,7 +152,6 @@
         <div class="muted">No notes yet. (The page is listening.)</div>
       {% endfor %}
     </div>
-    
   </section>
 </main>
 
