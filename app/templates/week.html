@@ -1,28 +1,45 @@
-{% set title = "Week of " ~ week_start.isoformat() ~ " • Planner" %}
+{# =========================
+   templates/week.html
+   ========================= #}
 {% extends "layout.html" %}
+{% set title = "Week of " ~ week_start.isoformat() ~ " • Planner" %}
 
 {% block content %}
 
 <div class="page">
 
-<header class="topbar">
-  <div class="wk-head-left">
-    <div class="brand"> Franklin Weekly </div>
-    <div class="date-big">Week of {{ week_start.isoformat() }}</div>
+  {# HEADER: now matches day page aesthetic (same .topbar/.brand/.date/.wkbtn) #}
+  <div class="topbar topbar--week">
+    <div>
+      <div class="brand">FRANKLIN PAGE</div>
+      <div class="date">
+        <div class="date-big">Weekly</div>
+        <div class="date-sub">
+          {{ week_start.strftime("%B %d, %Y") }} – {{ (week_start + timedelta(days=6)).strftime("%B %d, %Y") }}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
+      <div class="week-nav">
+        <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
+        <a class="wkbtn" href="{{ url_for('main.week_view', week_str='current') }}">Current</a>
+        <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
+        <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
+      </div>
+
+      {# Optional: keep the same 7-day strip as day view, linking into day pages #}
+      <div class="week">
+        {% for d in week_days %}
+          <a class="weekday"
+             href="{{ url_for('main.day_view', day_str=d.strftime('%Y-%m-%d')) }}">
+            <div class="wk-dow">{{ d.strftime("%a") }}</div>
+            <div class="wk-num">{{ d.day }}</div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
   </div>
-
-
-  
-  <nav class="wk-head-nav" aria-label="Week navigation">
-    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=prev_week.isoformat()) }}">‹ Prev</a>
-    <a class="wkbtn wk-chip-primary" href="{{ url_for('main.week_view', week_str='current') }}">Current</a>
-    <a class="wkbtn" href="{{ url_for('main.week_view', week_str=next_week.isoformat()) }}">Next ›</a>
-  </nav>
-
-  <div class="wk-head-right">
-    <a class="wkbtn" href="{{ url_for('main.day_view', day_str='today') }}">Day</a>
-  </div>
-</header>
 
   <!-- ─────────────────────────────────────────────
        WEEKLY INITIATIVES (TOP)
@@ -30,11 +47,14 @@
          LEFT  = Family / House / Music
          RIGHT = Work / Projects / Main Street
        ───────────────────────────────────────────── -->
-  <section class="card">
-    <div class="card-hd">
-      <div class="card-title">Weekly Initiatives</div>
+  <section class="wk-card">
+    <div class="wk-card-hd">
+      <div>
+        <div class="wk-card-title">WEEKLY INITIATIVES</div>
+        <div class="wk-card-sub">Keep it small. Keep it sharp.</div>
+      </div>
 
-      <form class="wk-capture" method="post" action="{{ url_for('main.add_week_goal', week_str=week_str) }}">
+      <form class="week-capture" method="post" action="{{ url_for('main.add_week_goal', week_str=week_str) }}">
         <select name="category" class="wk-select" required>
           <option value="" disabled selected>Category…</option>
           {% for c in goal_categories %}
@@ -104,48 +124,47 @@
   <!-- ─────────────────────────────────────────────
        WEEK SUMMARY (BELOW)
        ───────────────────────────────────────────── -->
-  <section class="card">
-    <div class="card-hd">
-      <div class="card-title">Weekly Summary</div>
-      <div class="card-sub">Day-linked tasks and appointments for this week</div>
-    </div>
-
-    <div class="wk-summary">
-      <div class="wk-split">
-        <div class="wk-pane">
-          <div class="wk-pane-hd">Appointments</div>
-          {% if week_appts %}
-            <div class="wk-sum-list">
-              {% for a in week_appts %}
-                <div class="wk-sum-row">
-                  <div class="wk-sum-left">{{ "%02d:%02d"|format(a.start_time.hour, a.start_time.minute) }}</div>
-                  <div class="wk-sum-mid">{{ a.title }}</div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="wk-empty"> </div>
-          {% endif %}
-        </div>
-
-        <div class="wk-pane">
-          <div class="wk-pane-hd">Tasks</div>
-          {% if week_tasks %}
-            <div class="wk-sum-list">
-              {% for t in week_tasks %}
-                <div class="wk-sum-row">
-                  <div class="wk-sum-left">{{ t.priority }}</div>
-                  <div class="wk-sum-mid">{{ t.text }}</div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="wk-empty"> </div>
-          {% endif %}
-        </div>
+  <section class="wk-card">
+    <div class="wk-card-hd">
+      <div>
+        <div class="wk-card-title">WEEKLY SUMMARY</div>
+        <div class="wk-card-sub">Day-linked tasks and appointments for this week</div>
       </div>
     </div>
 
+    <div class="wk-split">
+      <div class="wk-pane">
+        <div class="wk-pane-hd">Appointments</div>
+        {% if week_appts %}
+          <div class="wk-sum-list">
+            {% for a in week_appts %}
+              <div class="wk-sum-row">
+                <div class="wk-sum-left">{{ "%02d:%02d"|format(a.start_time.hour, a.start_time.minute) }}</div>
+                <div class="wk-sum-mid">{{ a.title }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="wk-empty"> </div>
+        {% endif %}
+      </div>
+
+      <div class="wk-pane">
+        <div class="wk-pane-hd">Tasks</div>
+        {% if week_tasks %}
+          <div class="wk-sum-list">
+            {% for t in week_tasks %}
+              <div class="wk-sum-row">
+                <div class="wk-sum-left">{{ t.priority }}</div>
+                <div class="wk-sum-mid">{{ t.text }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="wk-empty"> </div>
+        {% endif %}
+      </div>
+    </div>
   </section>
 
 </div>
